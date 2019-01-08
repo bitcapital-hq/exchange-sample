@@ -1,5 +1,7 @@
 import { IsAlphanumeric, IsEmail, validate } from "class-validator";
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import Order from './Order';
+import Payment from './Payment'
 
 @Entity(User.tableName)
 export default class User extends BaseEntity {
@@ -19,6 +21,12 @@ export default class User extends BaseEntity {
   @IsEmail()
   @Column({ nullable: false, unique: true })
   email: string;
+
+  @OneToMany(type => Order, order => order.user)
+  public orders: Order[];
+
+  @OneToMany(type => Payment, payment => payment.origin)
+  public payments: Payment[]
 
   constructor(data: Partial<User>) {
     super();
