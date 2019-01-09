@@ -13,7 +13,7 @@
   "dependencies": {
     "class-validator": "^0.9.1",
     "pjson": "^1.0.9",
-    "ts-framework": "nxtep-io/ts-framework#v2.3",
+    "ts-framework": "git+https://github.com/nxtep-io/ts-framework.git#v2.4",
     "ts-framework-common": "nxtep-io/ts-framework-common#2.3.1",
     "ts-framework-sql": "nxtep-io/ts-framework-sql#v2",
     "ts-node": "^7.0.1",

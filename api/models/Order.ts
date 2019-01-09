@@ -1,8 +1,8 @@
-import { BaseEntity, Column, DeepPartial, Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { BaseEntity, Column, DeepPartial, Entity, PrimaryGeneratedColumn, ManyToOne, ManyToMany } from 'typeorm';
 import User from './User';
 import Asset from './Asset';
-import { AssetType } from './Asset';
 import { IsCurrency } from 'class-validator';
+import Payment from './Payment';
 
 export enum OrderStatus {
   OPEN = 'open',
@@ -20,9 +20,6 @@ export default class OrderModel extends BaseEntity {
 
   @PrimaryGeneratedColumn('uuid')
   public id: string;
-
-  @Column({ nullable: false })
-  public name: string;
 
   @ManyToOne(type => User, user => user.orders)
   public user: User;
@@ -43,16 +40,12 @@ export default class OrderModel extends BaseEntity {
   @Column({ nullable: false })
   public type: OrderType;
 
+  @ManyToMany(type => Payment, payments => payments.orders)
+  public payments: Payment[];
+
   public constructor(data: DeepPartial<OrderModel> = {}) {
     super();
     this.id = data.id;
-    this.name = data.name;
   }
-
-  /**
-   * Finds order based on its name.
-   */ 
-  public static async findByName(name: string): Promise<OrderModel | undefined> {
-    return this.findOne({ where: {name} });
-  }
+  
 }

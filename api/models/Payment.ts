@@ -23,8 +23,8 @@ export default class PaymentModel extends BaseEntity {
   @Column({ nullable: false })
   public type: PaymentType;
 
-  @ManyToMany(type => Order, order.payments)
-  public orders: Order[]
+  @ManyToMany(type => Order, order => order.payments)
+  public orders: Order[];
 
   public constructor(data: DeepPartial<PaymentModel> = {}) {
     super();

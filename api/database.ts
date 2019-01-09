@@ -3,7 +3,7 @@ import Config from '../config';
 import * as Models from "./models";
 
 export default class MainDatabase extends EntityDatabase {
-  protected static ENTITIES = [Models.User]
+  protected static ENTITIES = [Models.Asset, Models.Order, Models.Payment, Models.User];
 
   protected static instance: MainDatabase = new MainDatabase();
 
