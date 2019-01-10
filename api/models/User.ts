@@ -30,6 +30,9 @@ export default class User extends BaseEntity {
   @Column({ nullable: false })
   password: string;
 
+  @Column({ nullable: true })
+  bitcapitalid: string; 
+  
   @OneToMany(type => Order, order => order.user)
   public orders: Order[];
 

@@ -1,4 +1,4 @@
-import Bitcapital, { Session, StorageUtil, MemoryStorage } from "bitcapital-core-sdk";
+import Bitcapital, { User as BitcapitalUser, Session, StorageUtil, MemoryStorage } from "bitcapital-core-sdk";
 import { User } from "../api/models"
 import { OAuthPasswordRequest } from "bitcapital-core-sdk/dist/types/services/request";
 
@@ -31,8 +31,12 @@ export async function getBitcapitalAPIClient() {
 
 export async function authenticateUser(user: User): Promise<User> {
     const client = await getBitcapitalAPIClient();
-    const remoteUser = await client.session().password({
+    const remoteUser: BitcapitalUser = await client.session().password({
         username: user.email,
-        password: user.passwordHash
+        password: user.password
+    });
+
+    return new User({
+      bitcapitalid: remoteUser.id        
     });
 }
