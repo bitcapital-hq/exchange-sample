@@ -1,4 +1,3 @@
-import { validate } from "class-validator";
 import { BaseEntity, Column, DeepPartial, Entity, PrimaryGeneratedColumn, OneToMany, Code } from 'typeorm';
 import Order from './Order';
 
@@ -31,11 +30,7 @@ export default class Asset extends BaseEntity {
     this.id = data.id;
     this.name = data.name;
   }
-
-  public async validate() {
-    return validate(this);
-  }
-
+  
   /**
    * Finds Assets based on its name.
    */ 
