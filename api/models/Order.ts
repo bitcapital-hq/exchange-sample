@@ -14,8 +14,8 @@ export enum OrderType {
   SELL = 'sell'
 }
 
-@Entity(OrderModel.tableName)
-export default class OrderModel extends BaseEntity {
+@Entity(Order.tableName)
+export default class Order extends BaseEntity {
   private static readonly tableName = 'orders';
 
   @PrimaryGeneratedColumn('uuid')
@@ -43,7 +43,7 @@ export default class OrderModel extends BaseEntity {
   @ManyToMany(type => Payment, payments => payments.orders)
   public payments: Payment[];
 
-  public constructor(data: DeepPartial<OrderModel> = {}) {
+  public constructor(data: DeepPartial<Order> = {}) {
     super();
     this.id = data.id;
   }

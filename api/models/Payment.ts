@@ -7,8 +7,8 @@ export enum PaymentType {
   WITHDRAWAL = 'withdrawal',
 }
 
-@Entity(PaymentModel.tableName)
-export default class PaymentModel extends BaseEntity {
+@Entity(Payment.tableName)
+export default class Payment extends BaseEntity {
   private static readonly tableName = 'payments';
 
   @PrimaryGeneratedColumn('uuid')
@@ -26,7 +26,7 @@ export default class PaymentModel extends BaseEntity {
   @ManyToMany(type => Order, order => order.payments)
   public orders: Order[];
 
-  public constructor(data: DeepPartial<PaymentModel> = {}) {
+  public constructor(data: DeepPartial<Payment> = {}) {
     super();
     this.id = data.id;
   }
@@ -34,7 +34,7 @@ export default class PaymentModel extends BaseEntity {
   /**
    * Finds Payment based on its name.
    */ 
-  public static async findByName(name: string): Promise<PaymentModel | undefined> {
+  public static async findByName(name: string): Promise<Payment | undefined> {
     return this.findOne({ where: {name} });
   }
 }
