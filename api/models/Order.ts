@@ -24,6 +24,7 @@ export default class Order extends BaseEntity {
   @ManyToOne(type => User, user => user.orders)
   public user: User;
 
+  @IsNotEmpty()
   @ManyToOne(type => Asset, asset => asset.orders)
   public asset: Asset;
 
@@ -43,6 +44,9 @@ export default class Order extends BaseEntity {
   @IsNotEmpty()
   @Column({ nullable: false })
   public type: OrderType;
+
+  @Column({ nullable: false, type: "int", default: 0 })
+  public filled: Number;
 
   @ManyToMany(type => Payment, payments => payments.orders)
   public payments: Payment[];
