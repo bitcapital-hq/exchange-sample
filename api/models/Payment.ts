@@ -1,6 +1,7 @@
 import { BaseEntity, Column, DeepPartial, Entity, PrimaryGeneratedColumn, ManyToOne, ManyToMany } from 'typeorm';
 import User from './User';
 import Order from './Order';
+import { IsNotEmpty, validate } from 'class-validator';
 
 export enum PaymentType {
   DEPOSIT = 'deposit',
@@ -20,11 +21,17 @@ export default class Payment extends BaseEntity {
   @ManyToOne(type => User, user => user.payments)
   public destination: User;
 
+  @IsNotEmpty()
   @Column({ nullable: false })
   public type: PaymentType;
 
+  @IsNotEmpty()
   @ManyToMany(type => Order, order => order.payments)
   public orders: Order[];
+
+  public async validate() {
+    return validate(this);
+  }
 
   public constructor(data: DeepPartial<Payment> = {}) {
     super();

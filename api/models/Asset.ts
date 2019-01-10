@@ -1,5 +1,6 @@
 import { BaseEntity, Column, DeepPartial, Entity, PrimaryGeneratedColumn, OneToMany, Code } from 'typeorm';
 import Order from './Order';
+import { IsNotEmpty, validate } from 'class-validator';
 
 export enum AssetType {
   FIAT = 'fiat',
@@ -13,12 +14,15 @@ export default class Asset extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   public id: string;
 
+  @IsNotEmpty()
   @Column({ nullable: false })
   public name: string;
 
+  @IsNotEmpty()
   @Column({ nullable: false })
   public code: string;
 
+  @IsNotEmpty()
   @Column({ nullable: false })
   public type: AssetType;
 
@@ -29,8 +33,14 @@ export default class Asset extends BaseEntity {
     super();
     this.id = data.id;
     this.name = data.name;
+    this.code = data.code;
+    this.type = data.type;
   }
   
+  public async validate() {
+    return validate(this)
+  }
+
   /**
    * Finds Assets based on its name.
    */ 

@@ -1,7 +1,7 @@
 import { BaseEntity, Column, DeepPartial, Entity, PrimaryGeneratedColumn, ManyToOne, ManyToMany } from 'typeorm';
 import User from './User';
 import Asset from './Asset';
-import { IsCurrency } from 'class-validator';
+import { IsCurrency, validate, IsNotEmpty } from 'class-validator';
 import Payment from './Payment';
 
 export enum OrderStatus {
@@ -27,21 +27,29 @@ export default class Order extends BaseEntity {
   @ManyToOne(type => Asset, asset => asset.orders)
   public asset: Asset;
 
+  @IsNotEmpty()
   @Column({ nullable: false, type: "int" })
   public quantity: Number;
 
+  @IsNotEmpty()
   @IsCurrency()
   @Column({ nullable: false })
   public price: String;
 
+  @IsNotEmpty()
   @Column({ nullable: false })
   public status: OrderStatus;
 
+  @IsNotEmpty()
   @Column({ nullable: false })
   public type: OrderType;
 
   @ManyToMany(type => Payment, payments => payments.orders)
   public payments: Payment[];
+
+  public async validate() {
+    return validate(this);
+  }
 
   public constructor(data: DeepPartial<Order> = {}) {
     super();
