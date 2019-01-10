@@ -9,7 +9,7 @@ export enum AssetType {
 
 @Entity(Asset.tableName)
 export default class Asset extends BaseEntity {
-  private static readonly tableName = 'Assets';
+  private static readonly tableName = 'assets';
 
   @PrimaryGeneratedColumn('uuid')
   public id: string;
