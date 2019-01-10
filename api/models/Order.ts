@@ -21,6 +21,7 @@ export default class Order extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   public id: string;
 
+  @IsNotEmpty()
   @ManyToOne(type => User, user => user.orders)
   public user: User;
 
