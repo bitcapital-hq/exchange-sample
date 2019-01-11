@@ -1,16 +1,17 @@
 // Keep config as first import
 import Server, { ServerOptions } from 'ts-framework';
 import Config from '../config';
-import StatusController from './controllers/StatusController';
-import UptimeService from './services/UptimeService';
+import * as Controllers from './controllers';
 import MainDatabase from './database';
+import UptimeService from './services/UptimeService';
+import AuthService from './services/AuthService';
 
 export default class MainServer extends Server {
   constructor(options?: ServerOptions) {
     super({
       ...Config.server,
       router: {
-        controllers: { StatusController }
+        controllers: Controllers,
       },
       children: [
         MainDatabase.getInstance(),
@@ -18,5 +19,10 @@ export default class MainServer extends Server {
       ],
       ...options,
     });
+  }
+
+  public async onReady() {
+    AuthService.initialize({name: ''});
+    await super.onReady();
   }
 }

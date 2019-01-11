@@ -1,8 +1,8 @@
 import * as crypto from 'crypto';
 
-export function generateHash(password, salt): Promise<string> {
+export function generateHash(password: string, salt: string): Promise<string> {
     return new Promise((resolve, reject) => {
-        crypto.pbkdf2(password, new Buffer(salt, 'hex'), 100000, 512, 'sha512', (error, key) => {
+        crypto.pbkdf2(password, salt, 100000, 512, 'sha512', (error, key) => {
             if (error) {
                 reject(error);
                 return;

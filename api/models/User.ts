@@ -31,9 +31,11 @@ export default class User extends BaseEntity {
   @Column({ nullable: false })
   password: string;
 
+  @IsOptional()
   @Column({ nullable: true })
   bitcapital_id: string; 
 
+  @IsOptional()
   @Column({ nullable: true })
   bitcapital_token: string;
 

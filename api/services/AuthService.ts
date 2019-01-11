@@ -4,6 +4,7 @@ import { User } from '../models'
 import { authenticateUser } from '../../config/bitcapital.client.config';
 import Session from '../models/Session';
 import { getRepository, Repository } from 'typeorm';
+import { registerDecorator } from 'class-validator';
 
 export interface AuthServiceOptions extends ServiceOptions {
 }
@@ -19,14 +20,14 @@ export default class AuthService extends Service {
     this.sessionRepository = getRepository(Session);
   }
 
-  public static getInstance(options: AuthServiceOptions) {
+  public static getInstance(options?: AuthServiceOptions) {
     if (!this.instance) {
       throw new BaseError("auth service is invalid or hasn't been initialized yet");
     }
     return this.instance;
   }
 
-  public static initialize(options: AuthServiceOptions) {
+  public static initialize(options?: AuthServiceOptions) {
     const service = new AuthService(options);
 
     if(!this.instance) {
@@ -57,7 +58,7 @@ export default class AuthService extends Service {
     const user = await User.findByEmail(email);
     
     if (!user) {
-      throw new HttpError('Not found', HttpCode.Client.NOT_FOUND);
+      throw new HttpError('User not found', HttpCode.Client.NOT_FOUND);
     }
 
     if (await user.validatePassword(password)) {
@@ -71,5 +72,25 @@ export default class AuthService extends Service {
     });
 
     return await this.sessionRepository.save(session);
+  }
+
+  //Registration
+  public async register(first_name: string, last_name: string, email:string, password:string): Promise<Session> {
+    if (await User.findByEmail(email)) {
+      throw new HttpError('Email already registered', HttpCode.Client.FORBIDDEN);
+    }
+
+    //Registering new user
+    const user = new User({
+      firstName: first_name,
+      lastName: last_name,
+      email: email,
+    });
+    user.setPassword(password);
+
+    //Saving the user and logging him in
+    user.save();
+
+    return await this.login(email, password);
   }
 }
