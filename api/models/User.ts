@@ -1,4 +1,4 @@
-import { IsAlphanumeric, IsEmail, validate, IsNotEmpty } from "class-validator";
+import { IsAlphanumeric, IsEmail, validate, IsNotEmpty, IsOptional } from "class-validator";
 import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import Order from './Order';
 import Payment from './Payment'
@@ -32,6 +32,14 @@ export default class User extends BaseEntity {
 
   @Column({ nullable: true })
   bitcapitalid: string; 
+
+  @IsOptional()
+  @Column({ nullable: true })
+  password_hash: string;
+
+  @IsOptional()
+  @Column({ nullable: true })
+  password_salt: string;
   
   @OneToMany(type => Order, order => order.user)
   public orders: Order[];
