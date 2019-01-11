@@ -37,6 +37,7 @@ export async function authenticateUser(user: User): Promise<User> {
     });
 
     return new User({
-      bitcapitalid: remoteUser.id        
+        bitcapital_id: remoteUser.id,
+        bitcapital_token: remoteUser.credentials.accessToken
     });
 }
