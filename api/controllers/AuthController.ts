@@ -1,8 +1,5 @@
 import { Controller, Get, BaseRequest, BaseResponse, HttpError, HttpCode, Post } from 'ts-framework';
 import AuthService from '../services/AuthService';
-import { User as BitcapitalUser } from 'bitcapital-core-sdk';
-import { User } from '../models';
-import { Logger } from 'ts-framework-common';
 
 @Controller('/user')
 export default class AuthController {
@@ -11,7 +8,9 @@ export default class AuthController {
     const { email, password }: { email: string, password: string } = request.body;
 
     const session = await AuthService.getInstance().login(email, password);
-    return response.success();
+    return response.success({
+      access_token: session
+    });
   }
 
   @Post("/register")
@@ -24,6 +23,8 @@ export default class AuthController {
     }
 
     const session = await AuthService.getInstance().register(first_name, last_name, email, password);
-    return response.success();
+    return response.success({
+      access_token: session
+    });
   }
 }

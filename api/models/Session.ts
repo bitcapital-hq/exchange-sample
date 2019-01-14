@@ -1,4 +1,4 @@
-import { BaseEntity, Column, DeepPartial, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, DeepPartial, Entity, PrimaryGeneratedColumn, Generated } from 'typeorm';
 
 @Entity(Session.tableName)
 export default class Session extends BaseEntity {
@@ -15,6 +15,10 @@ export default class Session extends BaseEntity {
 
   @Column({ default: true, nullable: false })
   public is_valid: boolean = true;
+
+  @Column({ nullable: false })
+  @Generated('uuid')
+  public token: string;
 
   public constructor(data: DeepPartial<Session> = {}) {
     super();

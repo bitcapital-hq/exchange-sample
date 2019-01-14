@@ -9,71 +9,28 @@
       "request": "attach",
       "name": "Attach",
       "port": 9229,
+      "restart": true,
       "sourceMaps": true,
-      "outFiles": [
-        "${workspaceRoot}/dist/**/*.js"
-      ]
+      "protocol": "inspector"
     },
     {
       "name": "Watch",
       "type": "node",
       "request": "launch",
-      "port": 9229,
       "cwd": "${workspaceRoot}",
+      "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/ts-framework",
+      "port": 9229,
       "restart": true,
-      "runtimeArgs": [
-        "--require",
-        "ts-node/register",
-        "--inspect=9229",
-        "${workspaceRoot}/node_modules/.bin/ts-framework",
-        "watch",
-      ],
       "sourceMaps": true,
-      "console": "integratedTerminal", 
-
+      "runtimeArgs": [
+        "watch",
+        "--inspect=0.0.0.0:9229"
+      ],
+      "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
       "env": {
         "NODE_ENV": "development",
       }
-    },
-    {
-      "name": "Debug Jest Tests",
-      "type": "node",
-      "request": "launch",
-      "cwd": "${workspaceRoot}",
-      "runtimeExecutable": "node",
-      "port": 9229,
-      "runtimeArgs": [
-        "--require",
-        "ts-node/register",
-        "--inspect=9229",
-        "${workspaceRoot}/node_modules/.bin/jest",
-        "--runInBand",
-        "--config=jest.json"
-      ],
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen",
-    },
-    {
-      "name": "Debug Jest Single File",
-      "type": "node",
-      "request": "launch",
-      "cwd": "${workspaceRoot}",
-      "runtimeExecutable": "node",
-      "port": 9229,
-      "runtimeArgs": [
-        "--require",
-        "ts-node/register",
-        "--inspect=9229",
-        "${workspaceRoot}/node_modules/.bin/jest",
-        "${relativeFile}",
-        "--runInBand",
-        "--config=jest.json"
-      ],
-      "env": {
-      },
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen",
     }
   ]
 }

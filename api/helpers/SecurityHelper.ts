@@ -1,22 +1,9 @@
 import * as crypto from 'crypto';
-import { Logger } from 'ts-framework-common';
-
-export function generateHash(password: string, salt: string): Promise<string> {
-    return new Promise((resolve, reject) => {
-        crypto.pbkdf2(password, salt, 100000, 512, 'sha512', (error, key) => {
-            if (error) {
-                reject(error);
-                return;
-            }
-            resolve(key.toString('hex'));
-        })
-    });
+export function generateSalt() {
+    return crypto.randomBytes(128).toString('base64');
 }
 
-export async function generatePassword(password: string): Promise<{ salt: string; hash: string }> {
-    const salt = crypto.randomBytes(128).toString('hex');
-    return {
-        salt: salt,
-        hash: await generateHash(password, salt)
-    }
+export function hashPassword(password:string, salt:string) {
+    const hmac = crypto.createHmac('sha256', salt);
+    return hmac.update(password).digest('hex');
 }

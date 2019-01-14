@@ -2,7 +2,7 @@ import { IsAlphanumeric, IsEmail, validate, IsNotEmpty, IsOptional } from "class
 import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import Order from './Order';
 import Payment from './Payment'
-import { generateHash, generatePassword } from "../helpers/SecurityHelper";
+import { hashPassword, generateSalt } from "../helpers/SecurityHelper";
 import { RelationCountMetadata } from "typeorm/metadata/RelationCountMetadata";
 import { Logger } from "ts-framework-common";
 
@@ -55,19 +55,20 @@ export default class User extends BaseEntity {
     return validate(this);
   }
 
-  public async validatePassword(password): Promise<boolean> {
-    if (!password || !this.password_hash || !this.password_salt) {   
+  public validatePassword(givenPassword: string) {
+    //Generating the hash of the given password to compare with the hash on the database
+    const given_password_hash = hashPassword(givenPassword, this.password_salt);
+    
+    if (given_password_hash === this.password_hash) {
+      return true;
+    } else {
       return false;
     }
-
-    const newHash = await generateHash(password, this.password_salt);
-    return newHash === this.password_hash;
   }
 
   public async setPassword(password: string) {
-    const { salt, hash } = await generatePassword(password);
-    this.password_salt = salt;
-    this.password_hash = hash;
+    this.password_salt = generateSalt();
+    this.password_hash = hashPassword(password, this.password_salt);
   }
 
   /**

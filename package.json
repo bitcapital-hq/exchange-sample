@@ -18,7 +18,8 @@
     "ts-framework-common": "nxtep-io/ts-framework-common#2.3.1",
     "ts-framework-sql": "nxtep-io/ts-framework-sql#v2",
     "ts-node": "^7.0.1",
-    "typeorm": "^0.2.11"
+    "typeorm": "^0.2.11",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "@types/jest": "^22.2.3",
