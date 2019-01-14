@@ -1,4 +1,4 @@
-import { BaseError, Service, ServiceOptions } from 'ts-framework-common';
+import { BaseError, Service, ServiceOptions, Logger } from 'ts-framework-common';
 import { HttpError, HttpCode } from 'ts-framework'; 
 import { User } from '../models'
 import { authenticateUser } from '../../config/bitcapital.client.config';
@@ -87,9 +87,9 @@ export default class AuthService extends Service {
       email: email,
     });
     user.setPassword(password);
-
+  
     //Saving the user and logging him in
-    user.save();
+    await user.save();
 
     return await this.login(email, password);
   }

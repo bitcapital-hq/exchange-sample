@@ -9,6 +9,10 @@
       "request": "attach",
       "name": "Attach",
       "port": 9229,
+      "sourceMaps": true,
+      "outFiles": [
+        "${workspaceRoot}/dist/**/*.js"
+      ]
     },
     {
       "name": "Watch",
@@ -19,8 +23,8 @@
       "port": 9229,
       "restart": true,
       "runtimeArgs": [
+        "--inspect=9229",
         "watch",
-        "--inspect=9229"
       ],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",

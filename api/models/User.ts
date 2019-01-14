@@ -27,10 +27,6 @@ export default class User extends BaseEntity {
   @Column({ nullable: false, unique: true })
   email: string;
 
-  @IsNotEmpty()
-  @Column({ nullable: false })
-  password: string;
-
   @IsOptional()
   @Column({ nullable: true })
   bitcapital_id: string; 
