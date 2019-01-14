@@ -11,9 +11,6 @@ export default class Session extends BaseEntity {
   public email: string;
 
   @Column({ nullable: false })
-  public token: string;
-  
-  @Column({ nullable: false })
   public created_at: Date;
 
   @Column({ default: true, nullable: false })

@@ -18,15 +18,19 @@
       "name": "Watch",
       "type": "node",
       "request": "launch",
-      "cwd": "${workspaceRoot}",
-      "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/ts-framework",
       "port": 9229,
+      "cwd": "${workspaceRoot}",
       "restart": true,
       "runtimeArgs": [
+        "--require",
+        "ts-node/register",
         "--inspect=9229",
+        "${workspaceRoot}/node_modules/.bin/ts-framework",
         "watch",
       ],
-      "console": "integratedTerminal",
+      "sourceMaps": true,
+      "console": "integratedTerminal", 
+
       "internalConsoleOptions": "neverOpen",
       "env": {
         "NODE_ENV": "development",

@@ -4,6 +4,7 @@ import Order from './Order';
 import Payment from './Payment'
 import { generateHash, generatePassword } from "../helpers/SecurityHelper";
 import { RelationCountMetadata } from "typeorm/metadata/RelationCountMetadata";
+import { Logger } from "ts-framework-common";
 
 @Entity(User.tableName)
 export default class User extends BaseEntity {
@@ -30,10 +31,6 @@ export default class User extends BaseEntity {
   @IsOptional()
   @Column({ nullable: true })
   bitcapital_id: string; 
-
-  @IsOptional()
-  @Column({ nullable: true })
-  bitcapital_token: string;
 
   @IsOptional()
   @Column({ nullable: true })

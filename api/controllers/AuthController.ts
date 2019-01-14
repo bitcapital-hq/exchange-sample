@@ -2,16 +2,15 @@ import { Controller, Get, BaseRequest, BaseResponse, HttpError, HttpCode, Post }
 import AuthService from '../services/AuthService';
 import { User as BitcapitalUser } from 'bitcapital-core-sdk';
 import { User } from '../models';
+import { Logger } from 'ts-framework-common';
 
-@Controller('/auth')
+@Controller('/user')
 export default class AuthController {
   @Post("/login")
   public static async login(request: BaseRequest, response: BaseResponse) {
     const { email, password }: { email: string, password: string } = request.body;
 
     const session = await AuthService.getInstance().login(email, password);
-    response.setHeader("Autorization", `Bearer ${session.token}`);
-
     return response.success();
   }
 
@@ -25,8 +24,6 @@ export default class AuthController {
     }
 
     const session = await AuthService.getInstance().register(first_name, last_name, email, password);
-
-    response.setHeader("Authorization", `Bearer ${session.token}`);
     return response.success();
   }
 }

@@ -33,7 +33,7 @@ export async function authenticateUser(user: User): Promise<User> {
     const client = await getBitcapitalAPIClient();
     const remoteUser: BitcapitalUser = await client.session().password({
         username: user.email,
-        password: user.password
+        password: 'user.password'
     });
 
     return new User({

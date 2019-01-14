@@ -1,4 +1,5 @@
 import * as crypto from 'crypto';
+import { Logger } from 'ts-framework-common';
 
 export function generateHash(password: string, salt: string): Promise<string> {
     return new Promise((resolve, reject) => {

@@ -67,8 +67,7 @@ export default class AuthService extends Service {
 
     const authenticated_user = await authenticateUser(user);
     const session = new Session({
-      email: user.email,
-      token: user.bitcapital_token
+      email: user.email
     });
 
     return await this.sessionRepository.save(session);
@@ -90,7 +89,7 @@ export default class AuthService extends Service {
   
     //Saving the user and logging him in
     await user.save();
-
+  
     return await this.login(email, password);
   }
 }
