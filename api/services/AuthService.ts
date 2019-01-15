@@ -68,7 +68,10 @@ export default class AuthService extends Service {
     });
 
     await this.sessionRepository.save(session);
-    return session.token;
+    return {
+      token: session.token,
+      user: this
+    };
   }
 
   //Registration
