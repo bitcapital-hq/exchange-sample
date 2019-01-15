@@ -121,6 +121,11 @@
   resolved "https://registry.yarnpkg.com/@types/crypto-js/-/crypto-js-3.1.43.tgz#b859347d6289ba13e347c335a4c9efa63337a748"
   integrity sha512-EHe/YKctU3IYNBsDmSOPX/7jLHPRlx8WaiDKSY9JCTnJ8XJeM4c0ZJvx+9Gxmr2s2ihI92R+3U/gNL1sq5oRuQ==
 
+"@types/dot-prop@^4.2.0":
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/@types/dot-prop/-/dot-prop-4.2.0.tgz#4a42caebd27e9ee353e053a702bdf9e4d5153ae2"
+  integrity sha512-apjIE00iabw3WgAfjrqm4OVZwDM9TatnvyHWzyCKDQZxC0nmXo0TTL+sXWaZo+fTIHVQ7NoneD4xcxhKodESlg==
+
 "@types/events@*":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@types/events/-/events-1.2.0.tgz#81a6731ce4df43619e5c8c945383b3e62a89ea86"
@@ -202,6 +207,11 @@
   dependencies:
     "@types/glob" "*"
     "@types/node" "*"
+
+"@types/semver@^5.4.0":
+  version "5.5.0"
+  resolved "https://registry.yarnpkg.com/@types/semver/-/semver-5.5.0.tgz#146c2a29ee7d3bae4bf2fcb274636e264c813c45"
+  integrity sha512-41qEJgBH/TWgo5NFSvBCJ1qkoi3Q6ONSF2avrHq1LVEZfYpdHmj0y9SuTK+u9ZhG1sYQKBL1AWXKyLWP4RaUoQ==
 
 "@types/serve-static@*":
   version "1.13.2"
@@ -1689,7 +1699,7 @@ dont-sniff-mimetype@1.0.0:
   resolved "https://registry.yarnpkg.com/dont-sniff-mimetype/-/dont-sniff-mimetype-1.0.0.tgz#5932890dc9f4e2f19e5eb02a20026e5e5efc8f58"
   integrity sha1-WTKJDcn04vGeXrAqIAJuXl78j1g=
 
-dot-prop@^4.1.0:
+dot-prop@^4.1.0, dot-prop@^4.2.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/dot-prop/-/dot-prop-4.2.0.tgz#1f19e0c2e1aa0e32797c49799f2837ac6af69c57"
   integrity sha512-tUMXrxlExSW6U2EXiiKGSBVdYgtV8qlHL+C10TsW4PURY/ic+eaysnSkwB4kA/mBlCyy/IKDJ+Lc3wbWeaXtuQ==
@@ -2395,6 +2405,13 @@ git-rev-sync@^1.12.0, git-rev-sync@^1.9.1:
     escape-string-regexp "1.0.5"
     graceful-fs "4.1.11"
     shelljs "0.7.7"
+
+git@^0.1.5:
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/git/-/git-0.1.5.tgz#9ef62df93f851c27542143bf52d1c68b1017ca15"
+  integrity sha1-nvYt+T+FHCdUIUO/UtHGixAXyhU=
+  dependencies:
+    mime "1.2.9"
 
 github-username@^4.0.0:
   version "4.1.0"
@@ -4099,6 +4116,11 @@ mime-types@^2.1.12, mime-types@~2.1.15, mime-types@~2.1.18, mime-types@~2.1.19:
   dependencies:
     mime-db "~1.37.0"
 
+mime@1.2.9:
+  version "1.2.9"
+  resolved "https://registry.yarnpkg.com/mime/-/mime-1.2.9.tgz#009cd40867bd35de521b3b966f04e2f8d4d13d09"
+  integrity sha1-AJzUCGe9Nd5SGzuWbwTi+NTRPQk=
+
 mime@1.4.1:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/mime/-/mime-1.4.1.tgz#121f9ebc49e3766f311a76e1fa1c8003c4b03aa6"
@@ -4782,6 +4804,11 @@ pgpass@1.x:
   dependencies:
     split "^1.0.0"
 
+phone@^2.0.0:
+  version "2.3.5"
+  resolved "https://registry.yarnpkg.com/phone/-/phone-2.3.5.tgz#622bc450bd8951beff2795ad16acf156cb67ddd4"
+  integrity sha512-saycXsiXrWbANuaLszWo8rgo4bbl+RTc7TEAd5spTt5+Ki65TcE0FoQDuVRpLe458NCg7KHPMRi0grQXPjEDYw==
+
 pify@^2.0.0, pify@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/pify/-/pify-2.3.0.tgz#ed141a6ac043a849ea588498e7dca8b15330e90c"
@@ -4977,7 +5004,7 @@ range-parser@~1.2.0:
   resolved "https://registry.yarnpkg.com/range-parser/-/range-parser-1.2.0.tgz#f49be6b487894ddc40dcc94a322f611092e00d5e"
   integrity sha1-9JvmtIeJTdxA3MlKMi9hEJLgDV4=
 
-raven@^2.1.0:
+raven@^2.1.0, raven@^2.2.1:
   version "2.6.4"
   resolved "https://registry.yarnpkg.com/raven/-/raven-2.6.4.tgz#458d4a380c8fbb59e0150c655625aaf60c167ea3"
   integrity sha512-6PQdfC4+DQSFncowthLf+B6Hr0JpPsFBgTVYTAOq7tCmx/kR4SXbeawtPch20+3QfUcQDoJBLjWW1ybvZ4kXTw==
@@ -6021,7 +6048,7 @@ ts-framework-common@nxtep-io/ts-framework-common#2.3.1:
     winston-elasticsearch "github:nxtep-io/winston-elasticsearch"
     winston-transport "^4.2.0"
 
-ts-framework-common@nxtep-io/ts-framework-common#2.3.2:
+ts-framework-common@nxtep-io/ts-framework-common#2.3.2, ts-framework-common@nxtep-io/ts-framework-common#v2:
   version "2.3.2"
   resolved "https://codeload.github.com/nxtep-io/ts-framework-common/tar.gz/1d9272a1b5f2a0f997031d5dae540edbf0f953e1"
   dependencies:
@@ -6059,6 +6086,18 @@ ts-framework-sql@nxtep-io/ts-framework-sql#v2:
     reflect-metadata "^0.1.12"
     ts-framework-common nxtep-io/ts-framework-common#2.3.2
     typeorm "^0.2.4"
+
+ts-framework-validation@nxtep-io/ts-framework-validation#v2:
+  version "2.0.3"
+  resolved "https://codeload.github.com/nxtep-io/ts-framework-validation/tar.gz/2176e5713cf30172bb00c97c82145c04eb99f8a5"
+  dependencies:
+    "@types/dot-prop" "^4.2.0"
+    "@types/semver" "^5.4.0"
+    dot-prop "^4.2.0"
+    phone "^2.0.0"
+    rimraf "^2.6.2"
+    ts-framework nxtep-io/ts-framework#v2.1
+    typescript "^2.5.3"
 
 ts-framework@nxtep-io/ts-framework#2.3.2:
   version "2.3.1"
@@ -6101,6 +6140,41 @@ ts-framework@nxtep-io/ts-framework#2.3.2:
     url-join "^4.0.0"
     winston-raven-sentry "^1.0.1"
     yeoman-environment "^2.3.4"
+
+ts-framework@nxtep-io/ts-framework#v2.1:
+  version "2.1.3"
+  resolved "https://codeload.github.com/nxtep-io/ts-framework/tar.gz/5630e94574e62c716e3631d43464333edbf96cf6"
+  dependencies:
+    "@types/cors" "^2.8.4"
+    "@types/express" "^4.16.0"
+    "@types/helmet" "^0.0.38"
+    "@types/lodash" "^4.14.116"
+    async "^2.5.0"
+    base64url "^2.0.0"
+    body-parser "^1.18.2"
+    clean-stack "^1.3.0"
+    cookie-parser "^1.4.3"
+    cors "^2.8.4"
+    express "^4.16.3"
+    express-oauth-server "^2.0.0"
+    express-useragent "^1.0.8"
+    fclone "^1.0.11"
+    git-rev-sync "^1.9.1"
+    hat "^0.0.3"
+    helmet "^3.13.0"
+    lodash "^4.17.10"
+    method-override "^2.3.10"
+    multer "^1.3.0"
+    pjson "^1.0.9"
+    raven "^2.2.1"
+    request-ip "^2.0.2"
+    rimraf "^2.6.2"
+    source-map-support "^0.5.0"
+    ts-framework-common nxtep-io/ts-framework-common#v2
+    typescript "^3.0.1"
+    urijs "^1.19.0"
+    url-join "^4.0.0"
+    winston-raven-sentry "^1.0.1"
 
 ts-framework@nxtep-io/ts-framework.git#v2.4:
   version "2.4.0"
@@ -6235,7 +6309,12 @@ typeorm@^0.2.11, typeorm@^0.2.4:
     yargonaut "^1.1.2"
     yargs "^12.0.5"
 
-typescript@^3.2.2:
+typescript@^2.5.3:
+  version "2.9.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.9.2.tgz#1cbf61d05d6b96269244eb6a3bce4bd914e0f00c"
+  integrity sha512-Gr4p6nFNaoufRIY4NMdpQRNmgxVIGMs4Fcu/ujdYk3nAZqk7supzBE9idmvfZIlH/Cuj//dvi+019qEue9lV0w==
+
+typescript@^3.0.1, typescript@^3.2.2:
   version "3.2.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.2.2.tgz#fe8101c46aa123f8353523ebdcf5730c2ae493e5"
   integrity sha512-VCj5UiSyHBjwfYacmDuc/NOk4QQixbE+Wn7MFJuS0nRuPQbof132Pw4u53dm264O8LPc2MVsc7RJNml5szurkg==
