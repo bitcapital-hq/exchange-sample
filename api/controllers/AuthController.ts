@@ -27,11 +27,6 @@ export default class AuthController {
   public static async register(request: BaseRequest, response: BaseResponse) {
     const { first_name, last_name, email, password }: { first_name: string, last_name: string, email: string, password: string } = request.body;
 
-    //Checking if all required fields are present
-    if (!first_name || !last_name || !email || !password) {
-      throw new HttpError('All fields are required.', HttpCode.Client.BAD_REQUEST);
-    }
-
     const session = await AuthService.getInstance().register(first_name, last_name, email, password);
     return response.success({
       access_token: session
