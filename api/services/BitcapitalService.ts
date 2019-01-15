@@ -1,55 +1,78 @@
 import { BaseError, Service, ServiceOptions } from 'ts-framework-common';
-import Bitcapital, {User as BitcapitalUser, Session, StorageUtil, MemoryStorage} from 'bitcapital-core-sdk'
+import Bitcapital, {User, Session, StorageUtil, MemoryStorage} from 'bitcapital-core-sdk'
 import { credentials } from '../../config/bitcapital.config';
 
-export interface BitcapitalServiceOptions extends ServiceOptions {
+const session = new Session({
+  storage: new StorageUtil("session", new MemoryStorage()),
+  http: credentials,
+  oauth: credentials
+});
+
+export interface BitCapitalServiceOptions extends ServiceOptions {
 }
 
-export default class BitcapitalService extends Service {
-  protected static instance: BitcapitalService;
-  public options: BitcapitalServiceOptions;
-  private const session = new Session({
-    storage: new StorageUtil("session", new MemoryStorage()),
-    http: credentials,
-    oauth: credentials
-  });
+export default class BitCapitalService extends Service {
+  public static bitCapitalClient: Bitcapital;
+  public options: BitCapitalServiceOptions;
 
-  constructor(options: BitcapitalServiceOptions) {
+  constructor(options?: BitCapitalServiceOptions) {
     super(options);
   }
 
-  public static getInstance(options: BitcapitalServiceOptions) {
-    if (!this.instance) {
-      throw new BaseError("BitCapital service is invalid or hasn't been initialized yet");
+  public static async initialize(options?: BitCapitalServiceOptions) {
+    this.bitCapitalClient = Bitcapital.initialize({
+      session,
+      ...credentials
+    });
+
+    try {
+      await this.bitCapitalClient.session().clientCredentials();
+
+      return this.bitCapitalClient;
+    } catch (e) {
+      throw new BaseError(e);
     }
-    return this.instance;
   }
 
-  public static initialize(options: BitcapitalServiceOptions) {
-    const service = new BitcapitalService(options);
-
-    if(!this.instance) {
-      this.instance = service;
+  public static async getInstance(options?: BitCapitalServiceOptions) {
+    if (this.bitCapitalClient) {
+      return this.bitCapitalClient;
     }
 
-    return service;
+    return await this.initialize();
   }
-  
+
+  public static async authenticate(username: string, password: string): Promise<User> {
+    try {
+      const client = await this.getInstance();
+      const mediator = await client.session().password({
+        username: credentials.clientId,
+        password: credentials.clientSecret
+      });
+
+      if (mediator.role !== 'mediator') {
+        throw new BaseError('Could not instantiate a mediator session.');
+      }
+
+      return mediator;
+    } catch (e) {
+      throw new BaseError(e);
+    }
+  }
+
   async onMount(): Promise<void> {
-    this.logger.debug('Mounting BitcapitalService instance');
+    this.logger.debug('Mounting BitCapitalService instance');
   }
 
   async onInit(): Promise<void> {
-    this.logger.debug('Initializing BitcapitalService instance');
+    this.logger.debug('Initializing BitCapitalService instance');
   }
 
   async onReady(): Promise<void> {
-    this.logger.info('BitcapitalService initialized successfully');
+    this.logger.info('BitCapitalService initialized successfully');
   }
 
   async onUnmount(): Promise<void> {
-    this.logger.debug('Unmounting BitcapitalService instance');
+    this.logger.debug('Unmounting BitCapitalService instance');
   }
-
-
 }

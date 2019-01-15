@@ -5,6 +5,7 @@ import * as Controllers from './controllers';
 import MainDatabase from './database';
 import UptimeService from './services/UptimeService';
 import AuthService from './services/AuthService';
+import BitCapitalService from './services/BitcapitalService';
 
 export default class MainServer extends Server {
   constructor(options?: ServerOptions) {
@@ -23,6 +24,7 @@ export default class MainServer extends Server {
 
   public async onReady() {
     AuthService.initialize({name: ''});
+    BitCapitalService.initialize({name: ''});
     await super.onReady();
   }
 }
