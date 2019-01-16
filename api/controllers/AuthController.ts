@@ -2,7 +2,7 @@ import { Controller, Get, BaseRequest, BaseResponse, HttpError, HttpCode, Post }
 import AuthService from '../services/AuthService';
 import BitCapitalService from '../services/BitcapitalService';
 import Validate, { Params } from 'ts-framework-validation';
-import {isValidName, isValidEmail, isValidPassword} from '../Validators';
+import {isValidName, isValidEmail, isValidPassword, isValidCPF} from '../Validators';
 
 @Controller('/user')
 export default class AuthController {
@@ -27,11 +27,13 @@ export default class AuthController {
     Validate.middleware('tax_id', isValidCPF)
   ])
   public static async register(request: BaseRequest, response: BaseResponse) {
-    const { first_name, last_name, email, password }: { first_name: string, last_name: string, email: string, password: string } = request.body;
-
+    const { first_name, last_name, email, password, tax_id }: { first_name: string, last_name: string, email: string, password: string, tax_id: string } = request.body;
+    
     //Registering the user into the BitCapital service
     const BitCapital = await BitCapitalService.getInstance();
-    
+    // try {
+
+    // }
 
     const service_response = await AuthService.getInstance().register(first_name, last_name, email, password);
     return response.success({
