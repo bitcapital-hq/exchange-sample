@@ -1,5 +1,6 @@
-import { BaseError, Service, ServiceOptions } from 'ts-framework-common';
+import { BaseError, Service, ServiceOptions, Logger } from 'ts-framework-common';
 import Bitcapital, {User, Session, StorageUtil, MemoryStorage} from 'bitcapital-core-sdk'
+import {User as ExchangeUser} from '../models'
 import { credentials } from '../../config/bitcapital.config';
 
 const session = new Session({
@@ -57,6 +58,45 @@ export default class BitCapitalService extends Service {
       return mediator;
     } catch (e) {
       throw new BaseError(e);
+    }
+  }
+
+  public static async registerConsumer(user: ExchangeUser) {
+    try {
+      const remoteUser = await this.bitCapitalClient.consumers().create({
+        firstName: user.first_name,
+        lastName: user.last_name,
+        email: user.email,
+        consumer: {
+          taxId: user.tax_id
+        }
+      } as any);
+
+      //Saving the user's BitCapital id into the database
+      user.bitcapital_id = remoteUser.id;
+      await user.save();
+    } catch (e) {
+      throw new BaseError('Could not create BitCapital user.');
+    }
+
+    return true;
+  }
+
+  public static async removeConsumer(user: ExchangeUser) {
+    try {
+      this.bitCapitalClient.consumers().delete(user.bitcapital_id);
+    } catch (e) {
+      throw new BaseError('Could not remove the customer from BitCapital.');
+    }
+
+    return true;
+  }
+
+  public static async getAllConsumers() {
+    try {
+      this.bitCapitalClient.consumers().findAll({skip: 0});
+    } catch (e) {
+      throw new BaseError('There was an error whilst querying BitCapital for consumers.');
     }
   }
 
