@@ -28,14 +28,17 @@ export default class AuthController {
   ])
   public static async register(request: BaseRequest, response: BaseResponse) {
     const { first_name, last_name, email, password, tax_id }: { first_name: string, last_name: string, email: string, password: string, tax_id: string } = request.body;
-    
+
     //Registering the user into the BitCapital service
-    const BitCapital = await BitCapitalService.getInstance();
-    // try {
+    try {
+      const bitcapital = await BitCapitalService.getInstance();
+      const mediator = await BitCapitalService.authenticate();
+      
+    } catch (e) {
 
-    // }
+    }
 
-    const service_response = await AuthService.getInstance().register(first_name, last_name, email, password);
+    const service_response = await AuthService.getInstance().register(first_name, last_name, tax_id, email, password);
     return response.success({
       access_token: service_response.token
     });

@@ -75,15 +75,16 @@ export default class AuthService extends Service {
   }
 
   //Registration
-  public async register(first_name: string, last_name: string, email:string, password:string) {
+  public async register(first_name: string, last_name: string, tax_id: string, email:string, password:string) {
     if (await User.findByEmail(email)) {
       throw new HttpError('Email already registered', HttpCode.Client.FORBIDDEN);
     }
 
     //Registering new user
     const user = new User({
-      firstName: first_name,
-      lastName: last_name,
+      first_name: first_name,
+      last_name: last_name,
+      tax_id: tax_id,
       email: email,
     });
     user.setPassword(password);

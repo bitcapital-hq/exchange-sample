@@ -42,7 +42,7 @@ export default class BitCapitalService extends Service {
     return await this.initialize();
   }
 
-  public static async authenticate(username: string, password: string): Promise<User> {
+  public static async authenticate(): Promise<User> {
     try {
       const client = await this.getInstance();
       const mediator = await client.session().password({

@@ -1,4 +1,4 @@
-import { IsAlphanumeric, IsEmail, validate, IsNotEmpty, IsOptional } from "class-validator";
+import { IsAlphanumeric, IsEmail, validate, IsNotEmpty, IsOptional, IsString } from "class-validator";
 import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import Order from './Order';
 import Payment from './Payment'
@@ -16,12 +16,17 @@ export default class User extends BaseEntity {
   @IsNotEmpty()
   @IsAlphanumeric()
   @Column({ nullable: false })
-  firstName: string;
+  first_name: string;
 
   @IsNotEmpty()
   @IsAlphanumeric()
   @Column({ nullable: false })
-  lastName: string;
+  last_name: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @Column({ nullable: false })
+  tax_id: string;
 
   @IsNotEmpty()
   @IsEmail()
