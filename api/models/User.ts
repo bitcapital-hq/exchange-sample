@@ -5,6 +5,8 @@ import Payment from './Payment'
 import { hashPassword, generateSalt } from "../helpers/SecurityHelper";
 import { RelationCountMetadata } from "typeorm/metadata/RelationCountMetadata";
 import { Logger } from "ts-framework-common";
+import { Wallet } from "bitcapital-core-sdk";
+import BitCapitalService from "../services/BitcapitalService";
 
 @Entity(User.tableName)
 export default class User extends BaseEntity {
