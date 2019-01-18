@@ -15,8 +15,6 @@ export default class AssetController {
   public static async create(request: BaseRequest, response: BaseResponse) {
     const { name, code }: { name: string, code: string } = request.body;
     let asset: AssetSchema;
-    // response.success(await BitCapitalService.createAsset(name, code));
-    // return true;
 
     try {
       let asset = await BitCapitalService.createAsset(name, code);
@@ -32,9 +30,10 @@ export default class AssetController {
   public static async emit(request: BaseRequest, response: BaseResponse) {
     const { id, recipient, amount }: { id: string, recipient: string, amount: string } = request.body;
     try {
-      await BitCapitalService.emitToken(id, recipient, amount);
+      const token = await BitCapitalService.emitToken(id, recipient, amount);
+      response.success(token);
     } catch (e) {
-      throw new HttpError('There was an error trying to emit tokens.', HttpCode.Server.INTERNAL_SERVER_ERROR);
+      throw new HttpError('There was an error trying to emit tokens.', HttpCode.Server.INTERNAL_SERVER_ERROR, e);
     }
   }
 

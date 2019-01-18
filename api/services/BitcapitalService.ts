@@ -1,5 +1,5 @@
 import { BaseError, Service, ServiceOptions, Logger } from 'ts-framework-common';
-import Bitcapital, {User, Session, StorageUtil, MemoryStorage, AssetSchema} from 'bitcapital-core-sdk'
+import Bitcapital, {User, Session, StorageUtil, MemoryStorage, AssetSchema, Wallet} from 'bitcapital-core-sdk'
 import {User as ExchangeUser} from '../models'
 import { apiCredentials, mediatorCredentials } from '../../config/bitcapital.config';
 import json5 = require('json5');
@@ -105,7 +105,10 @@ export default class BitCapitalService extends Service {
   }
 
   public static async getWallets(id: string) {
-    let user = await ExchangeUser.findOne({where: {id: id}});
+    let user = await ExchangeUser.findOne(id);
+    await Logger.getInstance().debug(id);
+    console.log(user);
+
     if (!user) {
       throw new BaseError('Invalid user_id.');
     }
@@ -141,17 +144,24 @@ export default class BitCapitalService extends Service {
     }
   }
 
+  // public static async emitToken(id: string, recipient: string, amount: string) {
+  // const wallet = await this.getWallets(id);
+  // try {
+  //     return await this.bitCapitalClient.assets().emit({
+  //       amount: amount,
+  //       id: id,
+  //       destination: wallet[0].id
+  //     });
+  //   } catch (e) {
+  //     throw new BaseError('There was an error trying to emit assets to a wallet, make sure you have permission to generate tokens of this asset.');
+  //   }
+  // }
+
   public static async emitToken(id: string, recipient: string, amount: string) {
-    try {
-      const wallet = this.getWallets(id);
-      return await this.bitCapitalClient.assets().emit({
-        amount: amount,
-        id: id,
-        destination: wallet[0]
-      });
-    } catch (e) {
-      throw new BaseError('There was an error trying to emit assets to a wallet, make sure you have permission to generate tokens of this asset.');
-    }
+    const wallet = await this.getWallets(recipient);
+    await Logger.getInstance().debug(JSON.stringify(wallet));
+    
+    process.exit();
   }
 
   async onMount(): Promise<void> {
