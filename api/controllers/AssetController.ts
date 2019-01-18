@@ -3,6 +3,7 @@ import Validate, { Params } from 'ts-framework-validation';
 import {isValidAssetCode} from '../Validators';
 import BitCapitalService from '../services/BitcapitalService';
 import Bitcapital, { AssetSchema } from 'bitcapital-core-sdk';
+import { Logger } from 'ts-framework-common';
 
 @Controller('/asset')
 export default class AssetController {
@@ -14,13 +15,17 @@ export default class AssetController {
   public static async create(request: BaseRequest, response: BaseResponse) {
     const { name, code }: { name: string, code: string } = request.body;
     let asset: AssetSchema;
+    // response.success(await BitCapitalService.createAsset(name, code));
+    // return true;
+
     try {
       let asset = await BitCapitalService.createAsset(name, code);
+      response.success(asset);
     } catch (e) {
       throw new HttpError('An error occured whilst trying to create the asset in the BitCapital service.', HttpCode.Server.INTERNAL_SERVER_ERROR);
     }
 
-    response.success(asset);
+    
   }
 
   @Post('/emit')

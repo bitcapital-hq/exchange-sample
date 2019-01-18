@@ -1,5 +1,5 @@
 import { BaseError, Service, ServiceOptions, Logger } from 'ts-framework-common';
-import Bitcapital, {User, Session, StorageUtil, MemoryStorage} from 'bitcapital-core-sdk'
+import Bitcapital, {User, Session, StorageUtil, MemoryStorage, AssetSchema} from 'bitcapital-core-sdk'
 import {User as ExchangeUser} from '../models'
 import { apiCredentials, mediatorCredentials } from '../../config/bitcapital.config';
 import json5 = require('json5');
@@ -99,15 +99,14 @@ export default class BitCapitalService extends Service {
   public static async getAllConsumers() {
     try {
       return this.bitCapitalClient.consumers().findAll({skip: 0});
-      // await this.bitCapitalClient.consumers().findOne('312f63de-65b6-427c-8fc6-ae86fdf732ae');
     } catch (e) {
       throw new BaseError('There was an error whilst querying BitCapital for consumers.');
     }
   }
 
   public static async getWallets(id: string) {
-    let user = await ExchangeUser.findByIds([id]);
-    if (user.length < 1) {
+    let user = await ExchangeUser.findOne({where: {id: id}});
+    if (!user) {
       throw new BaseError('Invalid user_id.');
     }
 
@@ -144,13 +143,11 @@ export default class BitCapitalService extends Service {
 
   public static async emitToken(id: string, recipient: string, amount: string) {
     try {
-      const wallets = await this.getWallets(recipient);
-      return await this.bitCapitalClient.payments().pay({
-        recipients: [{
-          amount: amount,
-          destination: recipient
-        }],
-        source: this.mediator.wallets[0].id
+      const wallet = this.getWallets(id);
+      return await this.bitCapitalClient.assets().emit({
+        amount: amount,
+        id: id,
+        destination: wallet[0]
       });
     } catch (e) {
       throw new BaseError('There was an error trying to emit assets to a wallet, make sure you have permission to generate tokens of this asset.');
