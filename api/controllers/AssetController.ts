@@ -5,6 +5,7 @@ import BitCapitalService from '../services/BitcapitalService';
 import Bitcapital, { AssetSchema } from 'bitcapital-core-sdk';
 import { Asset } from '../models';
 import { AssetType } from '../models/Asset';
+import { Logger } from 'ts-framework-common';
 
 @Controller('/asset')
 export default class AssetController {
@@ -15,18 +16,17 @@ export default class AssetController {
   ])
   public static async create(request: BaseRequest, response: BaseResponse) {
     const { name, code, type }: { name: string, code: string, type: string } = request.body;
-    let asset: AssetSchema;
-
+    
     try {
-      let asset = await BitCapitalService.createAsset(name, code);
+      const asset = await BitCapitalService.createAsset(name, code);
       const exchange_asset = new Asset({
         name: name,
         code: code,
-        type: (type == 'fiat' ? AssetType.FIAT : AssetType.CRYPTO),
-        bitcapital_asset_id: asset.id
+        type: (type == 'fiat' ? AssetType.FIAT : AssetType.CRYPTO)
       });
+      exchange_asset.bitcapital_asset_id = asset.id;
       await exchange_asset.save();
-      response.success(asset);
+      response.success(exchange_asset);
     } catch (e) {
       throw new HttpError('An error occured whilst trying to create the asset in the BitCapital service.', HttpCode.Server.INTERNAL_SERVER_ERROR);
     }
@@ -62,9 +62,9 @@ export default class AssetController {
         throw new HttpError('Invalid asset ID.', HttpCode.Client.BAD_REQUEST);
       }
 
-      const deleteAssets = await BitCapitalService.deleteAsset(asset.bitcapital_asset_id);
+      const deletedAssets = await BitCapitalService.deleteAsset(asset.bitcapital_asset_id);
       await asset.remove();
-      response.success(deleteAssets);
+      response.success(deletedAssets);
     } catch (e) {
       throw new HttpError('There was an error trying to delete the requested asset.', HttpCode.Server.INTERNAL_SERVER_ERROR);
     }
