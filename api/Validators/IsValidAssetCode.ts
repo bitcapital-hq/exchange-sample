@@ -1,4 +1,4 @@
-const max_length = 3;
+const max_length = 4;
 export default async (code: string = ''): Promise<boolean> => {
     const validator = /^[a-zA-Z0-9]+$/;
     if (code && code.length <= max_length && validator.test(code)) {
