@@ -1,4 +1,6 @@
-import { BaseEntity, Column, DeepPartial, Entity, PrimaryGeneratedColumn, Generated } from 'typeorm';
+import { BaseEntity, Column, DeepPartial, Entity, PrimaryGeneratedColumn, Generated, OneToOne } from 'typeorm';
+import { User } from '.';
+import { IsNotEmpty } from 'class-validator';
 
 @Entity(Session.tableName)
 export default class Session extends BaseEntity {
@@ -16,6 +18,9 @@ export default class Session extends BaseEntity {
   @Column({ default: true, nullable: false })
   public is_valid: boolean = true;
 
+  // @IsNotEmpty()
+  // @OneToOne(type => User)
+  // public owner: string;
   @Column({ nullable: false })
   @Generated('uuid')
   public token: string;

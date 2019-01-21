@@ -55,13 +55,14 @@ export default class AssetController {
 
   @Delete('/delete')
   public static async delete(request: BaseRequest, response: BaseResponse) {
-    const { id }: { id:string } = request.body;
+    const { id }: { id: string } = request.body;
     try {
       const asset = await Asset.findOne(id);
       if (!asset) {
         throw new HttpError('Invalid asset ID.', HttpCode.Client.BAD_REQUEST);
       }
-
+      
+      await Logger.getInstance().debug(asset.bitcapital_asset_id);
       const deletedAssets = await BitCapitalService.deleteAsset(asset.bitcapital_asset_id);
       await asset.remove();
       response.success(deletedAssets);

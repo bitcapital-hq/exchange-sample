@@ -133,7 +133,7 @@ export default class BitCapitalService extends Service {
   public static async deleteAsset(id: string) {
     const asset = await this.bitCapitalClient.assets().findOne(id);
     if (!asset) {
-      throw new BaseError('Invalid asset ID.');
+      throw new BaseError('Invalid BitCapital asset ID.');
     }
     
     try {

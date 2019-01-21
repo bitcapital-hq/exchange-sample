@@ -3,6 +3,7 @@ import { HttpError, HttpCode } from 'ts-framework';
 import { User } from '../models'
 import Session from '../models/Session';
 import { getRepository, Repository } from 'typeorm';
+import { expiration } from '../../config/session.config';
 
 export interface AuthServiceOptions extends ServiceOptions {
 }
@@ -94,5 +95,33 @@ export default class AuthService extends Service {
   
     const session = await this.login(email, password);
     return session;
+  }
+
+  //Valid session enforcement
+  public async getTokenInfo(token: string) {
+    const token_info = await Session.findOne({where: {id: token, is_valid: true}});
+    if (!token_info) {
+      return {
+        valid: false,
+        reason: 'Invalid token.'
+      }
+    }
+    
+    //Checking if the token isn't already expired
+    const expiration_date = token_info.created_at.getTime() + (1000 * expiration.minutes * 60);
+    if (expiration_date < Date.now()) {
+      return {
+        valid: true,
+        reason: 'Valid token'
+      };
+    } else {
+      //Voiding the session token
+      token_info.is_valid = false;
+      await token_info.save();
+      return {
+        valid: false,
+        reason: 'Token is too old.'
+      }
+    }
   }
 }
