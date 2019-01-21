@@ -105,7 +105,7 @@ export default class BitCapitalService extends Service {
     try {
       return await this.bitCapitalClient.consumers().findWalletsById(user.bitcapital_id);
     } catch (e) {
-      throw new BaseError('There was an error trying to get the requested user\'s wallet.', e);
+      throw new BaseError('There was an error trying to get the requested user\'s wallet.');
     }
   }
 
@@ -117,7 +117,7 @@ export default class BitCapitalService extends Service {
         code: code
       });
     } catch (e) {
-      throw new BaseError('There was an error trying to create the asset on BitCapital.', e);
+      throw new BaseError('There was an error trying to create the asset on BitCapital.');
     }
   }
 
@@ -125,15 +125,21 @@ export default class BitCapitalService extends Service {
     try {
       return await this.bitCapitalClient.assets().findAll({});
     } catch (e) {
-      throw new BaseError('There was an error querying the BitCapital API for assets.', e);
+      throw new BaseError('There was an error querying the BitCapital API for assets.');
     }
   }
 
   public static async deleteAsset(id: string) {
+    const asset = await this.bitCapitalClient.assets().findOne(id);
+    if (!asset) {
+      throw new BaseError('Invalid asset ID.');
+    }
+    
     try {
-      return await this.bitCapitalClient.assets().delete(id);
+      await this.bitCapitalClient.assets().delete(id);
+      return asset;
     } catch (e) {
-      throw new BaseError('There was an error trying to delete the asset from BitCapital.', e);
+      throw new BaseError('There was an error trying to delete the asset from BitCapital.');
     }
   }
 

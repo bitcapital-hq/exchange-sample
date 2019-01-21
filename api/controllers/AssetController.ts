@@ -1,4 +1,4 @@
-import { Controller, Get, BaseRequest, BaseResponse, HttpError, HttpCode, Post } from 'ts-framework';
+import { Controller, Get, BaseRequest, BaseResponse, HttpError, HttpCode, Post, Delete } from 'ts-framework';
 import Validate, { Params } from 'ts-framework-validation';
 import {isValidAssetCode} from '../Validators';
 import BitCapitalService from '../services/BitcapitalService';
@@ -34,7 +34,7 @@ export default class AssetController {
       const token = await BitCapitalService.emitToken(id, recipient, amount);
       response.success(token);
     } catch (e) {
-      throw new HttpError('There was an error trying to emit tokens.', HttpCode.Server.INTERNAL_SERVER_ERROR, e);
+      throw new HttpError('There was an error trying to emit tokens.', HttpCode.Server.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -44,7 +44,18 @@ export default class AssetController {
       const assets = await BitCapitalService.getAllAssets();
       response.success(assets);
     } catch (e) {
-      throw new HttpError('There was an error trying to get all assets.', HttpCode.Server.INTERNAL_SERVER_ERROR, e);
+      throw new HttpError('There was an error trying to get all assets.', HttpCode.Server.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Delete('/delete')
+  public static async delete(request: BaseRequest, response: BaseResponse) {
+    const { id }: { id:string } = request.body;
+    try {
+      const deleteAssets = await BitCapitalService.deleteAsset(id);
+      response.success(deleteAssets);
+    } catch (e) {
+      throw new HttpError('There was an error trying to delete the requested asset.', HttpCode.Server.INTERNAL_SERVER_ERROR);
     }
   }
 }
