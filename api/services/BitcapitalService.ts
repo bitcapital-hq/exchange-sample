@@ -96,25 +96,14 @@ export default class BitCapitalService extends Service {
     return true;
   }
 
-  public static async getAllConsumers() {
-    try {
-      return this.bitCapitalClient.consumers().findAll({skip: 0});
-    } catch (e) {
-      throw new BaseError('There was an error whilst querying BitCapital for consumers.');
-    }
-  }
-
   public static async getWallets(id: string) {
     let user = await ExchangeUser.findOne(id);
-    await Logger.getInstance().debug(id);
-    console.log(user);
-
     if (!user) {
       throw new BaseError('Invalid user_id.');
     }
 
     try {
-      return await this.bitCapitalClient.consumers().findWalletsById(user[0].bitcapital_id);
+      return await this.bitCapitalClient.consumers().findWalletsById(user.bitcapital_id);
     } catch (e) {
       throw new BaseError('There was an error trying to get the requested user\'s wallet.', e);
     }
@@ -128,39 +117,28 @@ export default class BitCapitalService extends Service {
         code: code
       });
     } catch (e) {
-      throw new BaseError('There was an error trying to create the asset on BitCapital.');
+      throw new BaseError('There was an error trying to create the asset on BitCapital.', e);
     }
   }
 
-  public static async listAssets() {
-    return await this.bitCapitalClient.assets().findAll({});
+  public static async getAllAssets() {
+    try {
+      return await this.bitCapitalClient.assets().findAll({});
+    } catch (e) {
+      throw new BaseError('There was an error querying the BitCapital API for assets.', e);
+    }
   }
 
   public static async deleteAsset(id: string) {
     try {
       return await this.bitCapitalClient.assets().delete(id);
     } catch (e) {
-      throw new BaseError('There was an error trying to delete the asset from BitCapital.');
+      throw new BaseError('There was an error trying to delete the asset from BitCapital.', e);
     }
   }
 
-  // public static async emitToken(id: string, recipient: string, amount: string) {
-  // const wallet = await this.getWallets(id);
-  // try {
-  //     return await this.bitCapitalClient.assets().emit({
-  //       amount: amount,
-  //       id: id,
-  //       destination: wallet[0].id
-  //     });
-  //   } catch (e) {
-  //     throw new BaseError('There was an error trying to emit assets to a wallet, make sure you have permission to generate tokens of this asset.');
-  //   }
-  // }
-
   public static async emitToken(id: string, recipient: string, amount: string) {
     const wallet = await this.getWallets(recipient);
-    await Logger.getInstance().debug(JSON.stringify(wallet));
-    
     process.exit();
   }
 

@@ -4,6 +4,7 @@ import {isValidAssetCode} from '../Validators';
 import BitCapitalService from '../services/BitcapitalService';
 import Bitcapital, { AssetSchema } from 'bitcapital-core-sdk';
 import { Logger } from 'ts-framework-common';
+import { HTTPTransport } from '@sentry/node/dist/transports';
 
 @Controller('/asset')
 export default class AssetController {
@@ -37,8 +38,13 @@ export default class AssetController {
     }
   }
 
-  @Get('/consumers')
-  public static async getConsumers(request: BaseRequest, response: BaseResponse) {
-    response.success(await BitCapitalService.getAllConsumers());
+  @Get('/all')
+  public static async getAll(request: BaseRequest, response: BaseResponse) {
+    try {
+      const assets = await BitCapitalService.getAllAssets();
+      response.success(assets);
+    } catch (e) {
+      throw new HttpError('There was an error trying to get all assets.', HttpCode.Server.INTERNAL_SERVER_ERROR, e);
+    }
   }
 }
