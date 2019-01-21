@@ -103,7 +103,8 @@ export default class BitCapitalService extends Service {
     }
 
     try {
-      return await this.bitCapitalClient.consumers().findWalletsById(user.bitcapital_id);
+      const consumer = await this.bitCapitalClient.consumers().findOne(user.bitcapital_id);
+      return consumer.wallets;
     } catch (e) {
       throw new BaseError('There was an error trying to get the requested user\'s wallet.');
     }
@@ -144,8 +145,17 @@ export default class BitCapitalService extends Service {
   }
 
   public static async emitToken(id: string, recipient: string, amount: string) {
-    const wallet = await this.getWallets(recipient);
-    process.exit();
+    let wallets = await this.getWallets(recipient);
+    
+    try {
+      return await this.bitCapitalClient.assets().emit({
+        amount: amount,
+        destination: wallets[0].id,
+        id: id
+      });
+    } catch (e) {
+      throw new BaseError('There was an error trying to emit tokens on the BitCapital network, make sure you have permission to emit the given asset.');
+    }
   }
 
   async onMount(): Promise<void> {
