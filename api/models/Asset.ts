@@ -26,6 +26,10 @@ export default class Asset extends BaseEntity {
   @Column({ nullable: false })
   public type: AssetType;
 
+  @IsNotEmpty()
+  @Column({ nullable: false })
+  public bitcapital_asset_id: string;
+
   @OneToMany(type => Order, order => order.user)
   public orders: Order[];
 

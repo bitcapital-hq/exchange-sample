@@ -3,8 +3,8 @@ import Validate, { Params } from 'ts-framework-validation';
 import {isValidAssetCode} from '../Validators';
 import BitCapitalService from '../services/BitcapitalService';
 import Bitcapital, { AssetSchema } from 'bitcapital-core-sdk';
-import { Logger } from 'ts-framework-common';
-import { HTTPTransport } from '@sentry/node/dist/transports';
+import { Asset } from '../models';
+import { AssetType } from '../models/Asset';
 
 @Controller('/asset')
 export default class AssetController {
@@ -14,17 +14,22 @@ export default class AssetController {
     Validate.middleware('code', isValidAssetCode)
   ])
   public static async create(request: BaseRequest, response: BaseResponse) {
-    const { name, code }: { name: string, code: string } = request.body;
+    const { name, code, type }: { name: string, code: string, type: string } = request.body;
     let asset: AssetSchema;
 
     try {
       let asset = await BitCapitalService.createAsset(name, code);
+      const exchange_asset = new Asset({
+        name: name,
+        code: code,
+        type: (type == 'fiat' ? AssetType.FIAT : AssetType.CRYPTO),
+        bitcapital_asset_id: asset.id
+      });
+      await exchange_asset.save();
       response.success(asset);
     } catch (e) {
       throw new HttpError('An error occured whilst trying to create the asset in the BitCapital service.', HttpCode.Server.INTERNAL_SERVER_ERROR);
     }
-
-    
   }
 
   @Post('/emit')
@@ -52,7 +57,13 @@ export default class AssetController {
   public static async delete(request: BaseRequest, response: BaseResponse) {
     const { id }: { id:string } = request.body;
     try {
-      const deleteAssets = await BitCapitalService.deleteAsset(id);
+      const asset = await Asset.findOne(id);
+      if (!asset) {
+        throw new HttpError('Invalid asset ID.', HttpCode.Client.BAD_REQUEST);
+      }
+
+      const deleteAssets = await BitCapitalService.deleteAsset(asset.bitcapital_asset_id);
+      await asset.remove();
       response.success(deleteAssets);
     } catch (e) {
       throw new HttpError('There was an error trying to delete the requested asset.', HttpCode.Server.INTERNAL_SERVER_ERROR);
