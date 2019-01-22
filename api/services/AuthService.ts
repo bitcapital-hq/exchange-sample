@@ -100,7 +100,7 @@ export default class AuthService extends Service {
 
   //Valid session enforcement
   public async getTokenInfo(token: string) {
-    const token_info = await Session.findOne(token);
+    const token_info = await Session.findOne({where: {id: token}});
     if (!token_info) {
       return {
         valid: false,
@@ -110,7 +110,8 @@ export default class AuthService extends Service {
     
     //Checking if the token isn't already expired
     const expiration_date = token_info.created_at.getTime() + (1000 * expiration.minutes * 60);
-    if (expiration_date < Date.now()) {
+    
+    if (expiration_date > Date.now()) {
       return {
         valid: true,
         reason: 'Valid token'
