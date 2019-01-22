@@ -1,5 +1,5 @@
-import { BaseEntity, Column, DeepPartial, Entity, PrimaryGeneratedColumn, OneToOne } from 'typeorm';
-import { User } from '.';
+import { BaseEntity, Column, DeepPartial, Entity, PrimaryGeneratedColumn, OneToOne, ManyToOne } from 'typeorm';
+import User from './User';
 import { IsNotEmpty } from 'class-validator';
 
 @Entity(Session.tableName)
@@ -19,7 +19,7 @@ export default class Session extends BaseEntity {
   public is_valid: boolean = true;
 
   @IsNotEmpty()
-  @OneToOne(type => User)
+  @ManyToOne(type => User, user => user.id)
   public owner: User;
   
   public constructor(data: DeepPartial<Session> = {}) {

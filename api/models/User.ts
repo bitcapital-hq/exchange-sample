@@ -1,11 +1,11 @@
 import { IsAlphanumeric, IsEmail, validate, IsNotEmpty, IsOptional, IsString } from "class-validator";
 import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn, OneToOne, ManyToOne } from "typeorm";
 import Order from './Order';
-import Payment from './Payment'
+import Payment from './Payment';
+import Session from './Session';
 import { hashPassword, generateSalt } from "../helpers/SecurityHelper";
 import { RelationCountMetadata } from "typeorm/metadata/RelationCountMetadata";
 import { Logger } from "ts-framework-common";
-import { Wallet, Session } from "bitcapital-core-sdk";
 import BitCapitalService from "../services/BitcapitalService";
 
 @Entity(User.tableName)
@@ -52,6 +52,9 @@ export default class User extends BaseEntity {
 
   @OneToMany(type => Payment, payment => payment.origin)
   public payments: Payment[]
+
+  @OneToMany(type => Session, session => session.id)
+  public sessions: Session[]
 
   constructor(data: Partial<User>) {
     super();

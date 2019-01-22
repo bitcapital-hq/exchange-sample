@@ -100,7 +100,7 @@ export default class AuthService extends Service {
 
   //Valid session enforcement
   public async getTokenInfo(token: string) {
-    const token_info = await Session.findOne({where: {id: token, is_valid: true}});
+    const token_info = await Session.findOne(token);
     if (!token_info) {
       return {
         valid: false,
