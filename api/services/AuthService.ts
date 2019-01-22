@@ -70,7 +70,7 @@ export default class AuthService extends Service {
 
     await this.sessionRepository.save(session);
     return {
-      token: session.token,
+      token: session.id,
       user: user
     };
   }

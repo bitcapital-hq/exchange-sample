@@ -1,4 +1,4 @@
-import { BaseEntity, Column, DeepPartial, Entity, PrimaryGeneratedColumn, Generated, OneToOne } from 'typeorm';
+import { BaseEntity, Column, DeepPartial, Entity, PrimaryGeneratedColumn, OneToOne } from 'typeorm';
 import { User } from '.';
 import { IsNotEmpty } from 'class-validator';
 
