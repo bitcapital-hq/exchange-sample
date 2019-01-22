@@ -1,6 +1,6 @@
 import { BaseError, Service, ServiceOptions, Logger } from 'ts-framework-common';
 import Bitcapital, {User, Session, StorageUtil, MemoryStorage, AssetSchema, Wallet} from 'bitcapital-core-sdk'
-import {User as ExchangeUser} from '../models'
+import {User as ExchangeUser, Asset} from '../models'
 import { apiCredentials, mediatorCredentials } from '../../config/bitcapital.config';
 import json5 = require('json5');
 
@@ -110,6 +110,32 @@ export default class BitCapitalService extends Service {
     }
   }
 
+  public static async getWalletInfo(id: string) {
+    try {
+      return await this.bitCapitalClient.wallets().findOne(id);
+    } catch (e) {
+      throw new BaseError('There was an error trying to get information about a wallet.');
+    }
+  }
+
+  public static async getUser(user: ExchangeUser) {
+    try {
+      return await this.bitCapitalClient.consumers().findOne(user.bitcapital_id);
+    } catch (e) {
+      throw new BaseError('There was an error trying to get consumer information');
+    }
+  }
+
+  public static async getAssetBalance(user: ExchangeUser, asset: string) {
+    const wallets = await this.getWallets(user.id.toString());
+    try {
+      const wallet_info = await this.getWalletInfo(wallets[0].id);
+      await Logger.getInstance().debug(require('util').inspect(wallet_info));
+    } catch (e) {
+      throw new BaseError('There was a problem trying to get the user\'s balance.');
+    }
+  }
+
   //Methods from here on now are not meant for user-facing usage, they're just here to facilitate demonstrations/tests.
   public static async createAsset(name: string, code: string) {
     try {
@@ -145,13 +171,21 @@ export default class BitCapitalService extends Service {
   }
 
   public static async emitToken(id: string, recipient: string, amount: string) {
+    //Getting the BitCapital ID of the asset
+    let asset: Asset;
+    try {
+      asset = await Asset.findOne(id);
+    } catch(e) {
+      throw new BaseError('Invalid asset ID.');
+    }
+
+    //Emitting the assets
     let wallets = await this.getWallets(recipient);
-    
     try {
       return await this.bitCapitalClient.assets().emit({
         amount: amount,
         destination: wallets[0].id,
-        id: id
+        id: asset.bitcapital_asset_id
       });
     } catch (e) {
       throw new BaseError('There was an error trying to emit tokens on the BitCapital network, make sure you have permission to emit the given asset.');

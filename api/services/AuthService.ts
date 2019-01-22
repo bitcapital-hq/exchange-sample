@@ -110,11 +110,11 @@ export default class AuthService extends Service {
     
     //Checking if the token isn't already expired
     const expiration_date = token_info.created_at.getTime() + (1000 * expiration.minutes * 60);
-    
     if (expiration_date > Date.now()) {
       return {
         valid: true,
-        reason: 'Valid token'
+        reason: 'Valid token',
+        owner: token_info.owner
       };
     } else {
       //Voiding the session token

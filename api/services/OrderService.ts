@@ -1,5 +1,7 @@
-import { BaseError, Service, ServiceOptions } from 'ts-framework-common';
-import { Asset } from '../models';
+import { BaseError, Service, ServiceOptions, Logger } from 'ts-framework-common';
+import { Asset, User } from '../models';
+import BitCapitalService from './BitcapitalService';
+import { base_asset } from '../../config/exchange.config';
 
 export interface OrderServiceOptions extends ServiceOptions {
 }
@@ -29,7 +31,7 @@ export default class OrderService extends Service {
     return service;
   }
   
-  public static async create(asset, type, quantity, price) {
+  public static async create(asset, type, quantity, price, user: User) {
     //Checking if the given asset ID is valid
     const database_asset = Asset.findOne(asset);
     if (!database_asset) {
@@ -38,7 +40,8 @@ export default class OrderService extends Service {
 
     //Checking if the user has enough money on his wallet to liquidate this position (if it's a buy)
     if (type == 'buy') {
-      
+      //Getting the user balance on our base asset
+      await BitCapitalService.getAssetBalance(user, base_asset.bitcapital_id);
     }
   }
 
