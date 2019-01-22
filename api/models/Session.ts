@@ -18,13 +18,10 @@ export default class Session extends BaseEntity {
   @Column({ default: true, nullable: false })
   public is_valid: boolean = true;
 
-  // @IsNotEmpty()
-  // @OneToOne(type => User)
-  // public owner: string;
-  @Column({ nullable: false })
-  @Generated('uuid')
-  public token: string;
-
+  @IsNotEmpty()
+  @OneToOne(type => User)
+  public owner: string;
+  
   public constructor(data: DeepPartial<Session> = {}) {
     super();
     this.created_at = new Date();
