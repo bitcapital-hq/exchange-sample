@@ -20,7 +20,7 @@ export default class Session extends BaseEntity {
 
   @IsNotEmpty()
   @OneToOne(type => User)
-  public owner: string;
+  public owner: User;
   
   public constructor(data: DeepPartial<Session> = {}) {
     super();
