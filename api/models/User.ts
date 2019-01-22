@@ -1,11 +1,11 @@
 import { IsAlphanumeric, IsEmail, validate, IsNotEmpty, IsOptional, IsString } from "class-validator";
-import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn, OneToOne, ManyToOne } from "typeorm";
 import Order from './Order';
 import Payment from './Payment'
 import { hashPassword, generateSalt } from "../helpers/SecurityHelper";
 import { RelationCountMetadata } from "typeorm/metadata/RelationCountMetadata";
 import { Logger } from "ts-framework-common";
-import { Wallet } from "bitcapital-core-sdk";
+import { Wallet, Session } from "bitcapital-core-sdk";
 import BitCapitalService from "../services/BitcapitalService";
 
 @Entity(User.tableName)
