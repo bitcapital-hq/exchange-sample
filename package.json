@@ -31,7 +31,7 @@
     "jest": "^22.4.3",
     "rimraf": "^2.6.2",
     "supertest": "^3.0.0",
-    "ts-framework-cli": "nxtep-io/ts-framework-cli",
+    "ts-framework-cli": "nxtep-io/ts-framework-cli#v2.4",
     "ts-jest": "^22.4.4"
   }
 }

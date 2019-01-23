@@ -1,7 +1,8 @@
 import { BaseError, Service, ServiceOptions, Logger } from 'ts-framework-common';
-import { Asset, User } from '../models';
+import { Asset, User, Order } from '../models';
 import BitCapitalService from './BitcapitalService';
 import { base_asset } from '../../config/exchange.config';
+import { OrderStatus, OrderType } from '../models/Order';
 
 export interface OrderServiceOptions extends ServiceOptions {
 }
@@ -31,7 +32,7 @@ export default class OrderService extends Service {
     return service;
   }
   
-  public static async create(asset, type, quantity, price, user: User) {
+  public static async create(asset: string, type: string, quantity: number, price: string, user: User) {
     //Checking if the given asset ID is valid
     const database_asset = Asset.findOne(asset);
     if (!database_asset) {
@@ -41,8 +42,27 @@ export default class OrderService extends Service {
     //Checking if the user has enough money on his wallet to liquidate this position (if it's a buy)
     if (type == 'buy') {
       //Getting the user balance on our base asset
-      await BitCapitalService.getAssetBalance(user, base_asset.bitcapital_id);
+      let balance = parseInt(await BitCapitalService.getAssetBalance(user, base_asset.asset_code));
+      let order_total = quantity * parseInt(price);
+      if (balance < order_total) {
+        throw new BaseError('You don\'t have enough funds to open this position.');
+      }
+
+      //Moving funds out of the user wallet
+      await BitCapitalService.moveFunds(order_total, user.id.toString());
     }
+
+    //Adding the order to the book
+    const order = new Order();
+    order.user = user;
+    order.asset = await Asset.findOne(asset);
+    order.quantity = quantity;
+    order.price = price;
+    order.status = OrderStatus.OPEN;
+    order.type = (type == 'buy' ? OrderType.BUY : OrderType.SELL)
+    await order.save();
+
+    return order
   }
 
   async onMount(): Promise<void> {

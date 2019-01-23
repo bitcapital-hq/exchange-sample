@@ -1,4 +1,4 @@
-import { BaseError, Logger } from "ts-framework-common";
+import { BaseError } from "ts-framework-common";
 
 const correct_length = 11;
 export default async (cpf: string = ''): Promise<boolean> => {

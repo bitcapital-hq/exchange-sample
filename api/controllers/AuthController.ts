@@ -41,7 +41,7 @@ export default class AuthController {
       const bitcapital_user = await BitCapitalService.registerConsumer(user_creation_info.user);
     } catch (e) {
       //Deleting session and user from the database
-      Session.delete({token: user_creation_info.token});
+      Session.delete(user_creation_info.token);
       user_creation_info.user.remove();
       throw new HttpError('There was an error trying to register the user in the BitCapital service.', HttpCode.Server.INTERNAL_SERVER_ERROR);
     }

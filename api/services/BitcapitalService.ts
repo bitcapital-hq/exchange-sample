@@ -1,8 +1,9 @@
-import { BaseError, Service, ServiceOptions, Logger } from 'ts-framework-common';
+import { BaseError, Service, ServiceOptions, Logger, LoggerUtils } from 'ts-framework-common';
 import Bitcapital, {User, Session, StorageUtil, MemoryStorage, AssetSchema, Wallet} from 'bitcapital-core-sdk'
 import {User as ExchangeUser, Asset} from '../models'
 import { apiCredentials, mediatorCredentials } from '../../config/bitcapital.config';
 import json5 = require('json5');
+import { mediator_info, base_asset } from '../../config/exchange.config';
 
 const session = new Session({
   storage: new StorageUtil("session", new MemoryStorage()),
@@ -106,6 +107,7 @@ export default class BitCapitalService extends Service {
       const consumer = await this.bitCapitalClient.consumers().findOne(user.bitcapital_id);
       return consumer.wallets;
     } catch (e) {
+      await Logger.getInstance().debug(require('util').inspect(e));
       throw new BaseError('There was an error trying to get the requested user\'s wallet.');
     }
   }
@@ -126,13 +128,39 @@ export default class BitCapitalService extends Service {
     }
   }
 
-  public static async getAssetBalance(user: ExchangeUser, asset: string) {
+  public static async getAssetBalance(user: ExchangeUser, asset_code: string): Promise<string> {
     const wallets = await this.getWallets(user.id.toString());
     try {
+      //Iteraing through all balances and attempting to find the requested one
       const wallet_info = await this.getWalletInfo(wallets[0].id);
-      await Logger.getInstance().debug(require('util').inspect(wallet_info));
+      for (let i = 0; i <= wallet_info.balances.length - 1; i++) {
+        let in_wallet_asset_info = wallet_info.balances[i];
+        if (in_wallet_asset_info.asset_code == asset_code) {
+          return in_wallet_asset_info.balance.toString();
+        }
+      }
+
+      return '0';
     } catch (e) {
       throw new BaseError('There was a problem trying to get the user\'s balance.');
+    }
+  }
+
+  public static async moveFunds(quantity: number, id: string, destination: string = mediator_info.wallet): Promise<boolean> {
+    try {
+      const wallets = await this.getWallets(id);
+      const payment_info = await this.bitCapitalClient.payments().pay({
+        asset: base_asset.asset_code,
+        source: wallets[0].id,
+        recipients: [{
+          amount: quantity.toString(),
+          destination: destination
+        }]
+      });
+
+      return true;
+    } catch (e) {
+      throw new BaseError('There was an error trying to move funds out of the user\'s wallet.');
     }
   }
 
