@@ -3,10 +3,18 @@ import OrderService from '../services/OrderService';
 import AuthService from '../services/AuthService';
 import { User } from '../models';
 import { Logger } from 'ts-framework-common';
+import Validate, { Params } from 'ts-framework-validation';
+import { isValidAmount, isValidGuid, isValidOrderType, isValidAssetHybrid } from '../Validators';
 
 @Controller('/order')
 export default class OrderController {
-  @Post('/create')
+  @Post('/create', [
+    Validate.middleware('asset', isValidAssetHybrid),
+    Validate.middleware('type', isValidOrderType),
+    Validate.middleware('quantity', isValidAmount),
+    Validate.middleware('price', isValidAmount),
+    Validate.middleware('token', isValidGuid)
+  ])
   public static async create(request: BaseRequest, response: BaseResponse) {
     const { asset, type, quantity, price, token }: { asset: string, type: string, quantity: number, price: string, token: string } = request.body;
 

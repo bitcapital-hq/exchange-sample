@@ -2,7 +2,6 @@ import { Controller, Get, BaseRequest, BaseResponse, HttpError, HttpCode, Post, 
 import Validate, { Params } from 'ts-framework-validation';
 import {isValidAssetCode, isValidGuid, isValidAmount} from '../Validators';
 import BitCapitalService from '../services/BitcapitalService';
-import Bitcapital, { AssetSchema } from 'bitcapital-core-sdk';
 import { Asset } from '../models';
 import { AssetType } from '../models/Asset';
 import { Logger } from 'ts-framework-common';
