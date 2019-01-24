@@ -4,6 +4,6 @@ export { default as isValidEmail } from './IsValidEmail';
 export { default as isValidCPF } from './IsValidCPF';
 export { default as isValidAssetCode } from './IsValidAssetCode';
 export { default as isValidGuid } from './IsValidGuid';
-export { default as isValidAmount } from './IsValidGuid';
+export { default as isValidAmount } from './IsValidAmount';
 export { default as isValidOrderType } from './IsValidOrderType';
 export { default as isValidAssetHybrid } from './IsValidAssetHybrid';

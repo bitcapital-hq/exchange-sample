@@ -5,10 +5,11 @@ import { User } from '../models';
 import { Logger } from 'ts-framework-common';
 import Validate, { Params } from 'ts-framework-validation';
 import { isValidAmount, isValidGuid, isValidOrderType, isValidAssetHybrid } from '../Validators';
+import BitCapitalService from '../services/BitcapitalService';
 
 @Controller('/order')
 export default class OrderController {
-  @Post('/create', [
+  @Post('/create/', [
     Validate.middleware('asset', isValidAssetHybrid),
     Validate.middleware('type', isValidOrderType),
     Validate.middleware('quantity', isValidAmount),
@@ -34,5 +35,4 @@ export default class OrderController {
       throw new HttpError('There was an error trying to create an order.', HttpCode.Server.INTERNAL_SERVER_ERROR, e);
     }
   }
-
 }
