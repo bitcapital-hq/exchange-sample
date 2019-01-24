@@ -150,7 +150,7 @@ export default class BitCapitalService extends Service {
     try {
       const wallets = await this.getWallets(id);
       const payment_info = await this.bitCapitalClient.payments().pay({
-        asset: base_asset.asset_code,
+        asset: base_asset.bitcapital_id,
         source: wallets[0].id,
         recipients: [{
           amount: quantity.toString(),
@@ -160,6 +160,7 @@ export default class BitCapitalService extends Service {
 
       return true;
     } catch (e) {
+      await Logger.getInstance().debug(require('util').inspect(e));
       throw new BaseError('There was an error trying to move funds out of the user\'s wallet.');
     }
   }
