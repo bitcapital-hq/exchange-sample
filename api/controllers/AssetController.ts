@@ -1,6 +1,6 @@
 import { Controller, Get, BaseRequest, BaseResponse, HttpError, HttpCode, Post, Delete } from 'ts-framework';
 import Validate, { Params } from 'ts-framework-validation';
-import {isValidAssetCode} from '../Validators';
+import {isValidAssetCode, isValidGuid, isValidAmount} from '../Validators';
 import BitCapitalService from '../services/BitcapitalService';
 import Bitcapital, { AssetSchema } from 'bitcapital-core-sdk';
 import { Asset } from '../models';
@@ -32,7 +32,11 @@ export default class AssetController {
     }
   }
 
-  @Post('/emit')
+  @Post('/emit', [
+    Validate.middleware('id', isValidGuid),
+    Validate.middleware('recipient', isValidGuid),
+    Validate.middleware('amount', isValidAmount)
+  ])
   public static async emit(request: BaseRequest, response: BaseResponse) {
     const { id, recipient, amount }: { id: string, recipient: string, amount: string } = request.body;
     try {
@@ -53,7 +57,9 @@ export default class AssetController {
     }
   }
 
-  @Delete('/delete')
+  @Delete('/delete', [
+    Validate.middleware('id', isValidGuid)
+  ])
   public static async delete(request: BaseRequest, response: BaseResponse) {
     const { id }: { id: string } = request.body;
     try {
