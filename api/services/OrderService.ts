@@ -34,7 +34,10 @@ export default class OrderService extends Service {
   
   public static async create(asset: string, type: string, quantity: number, price: string, user: User) {
     //Checking if the given asset ID is valid
-    const database_asset = Asset.findOne(asset);
+    const database_asset = Asset.findOne({where: [
+      {id: asset},
+      {code: asset}
+    ]});
     if (!database_asset) {
       throw new BaseError('Invalid asset.');
     }
