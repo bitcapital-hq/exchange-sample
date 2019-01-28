@@ -1,6 +1,6 @@
 export const base_asset = {
-    id: '2d93e829-1a62-4f74-88e9-6b76983c5482',
-    bitcapital_id: '456b673d-803a-4ba5-8b2d-df5548f055c8',
+    id: '78818b56-201c-43b4-a4d9-fb143ea1acbf',
+    bitcapital_id: '5a41743b-4327-4ed8-b1e6-f06e230957b4',
     asset_code: 'EBA'
 }
 

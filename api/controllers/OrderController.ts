@@ -2,10 +2,8 @@ import { Controller, Get, BaseRequest, BaseResponse, HttpError, HttpCode, Post }
 import OrderService from '../services/OrderService';
 import AuthService from '../services/AuthService';
 import { User } from '../models';
-import { Logger } from 'ts-framework-common';
 import Validate, { Params } from 'ts-framework-validation';
 import { isValidAmount, isValidGuid, isValidOrderType, isValidAssetHybrid } from '../Validators';
-import BitCapitalService from '../services/BitcapitalService';
 
 @Controller('/order')
 export default class OrderController {
@@ -31,7 +29,10 @@ export default class OrderController {
       const order = await OrderService.create(asset, type, quantity, price, user);
       response.success(order);
     } catch (e) {
-      await Logger.getInstance().debug(require('util').inspect(e));
+      if (e.hasOwnProperty('originalMessage') && e.originalMessage == "You don't have enough funds to open this position.") {
+        throw new HttpError('You do not have enough funds to fully liquidate this position once open.', HttpCode.Client.BAD_REQUEST);  
+      }
+
       throw new HttpError('There was an error trying to create an order.', HttpCode.Server.INTERNAL_SERVER_ERROR, e);
     }
   }

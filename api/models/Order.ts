@@ -31,12 +31,12 @@ export default class Order extends BaseEntity {
 
   @IsNotEmpty()
   @Column({ nullable: false, type: "int" })
-  public quantity: Number;
+  public quantity: number;
 
   @IsNotEmpty()
   @IsCurrency()
   @Column({ nullable: false })
-  public price: String;
+  public price: string;
 
   @IsNotEmpty()
   @Column({ nullable: false })
@@ -47,7 +47,7 @@ export default class Order extends BaseEntity {
   public type: OrderType;
 
   @Column({ nullable: false, type: "int", default: 0 })
-  public filled: Number;
+  public filled: number;
 
   @ManyToMany(type => Payment, payments => payments.orders)
   public payments: Payment[];
