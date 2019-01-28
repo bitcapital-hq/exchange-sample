@@ -149,8 +149,9 @@ export default class BitCapitalService extends Service {
   public static async moveFunds(quantity: number, id: string, destination: string = mediator_info.wallet): Promise<boolean> {
     try {
       const wallets = await this.getWallets(id);
+      await Logger.getInstance().silly(require('util').inspect(base_asset));
       const payment_info = await this.bitCapitalClient.payments().pay({
-        asset: base_asset.bitcapital_id,
+        asset: base_asset.asset_code,
         source: wallets[0].id,
         recipients: [{
           amount: quantity.toString(),
@@ -158,6 +159,7 @@ export default class BitCapitalService extends Service {
         }]
       });
 
+      await Logger.getInstance().debug(require('util').inspect(payment_info));
       return true;
     } catch (e) {
       await Logger.getInstance().debug(require('util').inspect(e));

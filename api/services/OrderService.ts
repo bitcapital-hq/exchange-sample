@@ -3,7 +3,7 @@ import { Asset, User, Order } from '../models';
 import BitCapitalService from './BitcapitalService';
 import { base_asset } from '../../config/exchange.config';
 import { OrderStatus, OrderType } from '../models/Order';
-import { LessThan } from 'typeorm';
+import { LessThan, MoreThan } from 'typeorm';
 
 export interface OrderServiceOptions extends ServiceOptions {
 }
@@ -72,48 +72,52 @@ export default class OrderService extends Service {
   public static async match(order: Order): Promise<object> {
     let basket = {
       ableToFullfil: 0,
-      amountSpent: 0,
+      amountOfBaseAssetMoved: 0,
       breakdown: []
     };
 
+    let quantityRemaining = order.quantity - order.filled;
+    let orders = [];
     if (order.type == 'buy') {
-      let quantityRemaining = order.quantity - order.filled;
-
       //Finding orders that can match this one, either completely or partially
-      const orders = await Order.find({
+      orders = await Order.find({
         where: {asset: order.asset, type: OrderType.SELL, status: OrderStatus.OPEN, price: LessThan(order.price)},
         order: {price: "ASC"}
       });
-
-      //Building the basket
-      for (let i = 0; i <= orders.length - 1; i++) {
-        let currentOrder = orders[i];
-        let quantityAvailable = currentOrder.quantity - currentOrder.filled;
-
-        //Determining how much we're buying from this specific order
-        let quantityToBuy = 0;
-        if (quantityAvailable >= quantityRemaining) {
-          quantityToBuy = quantityRemaining;
-        } else {
-          quantityToBuy = quantityAvailable;
-        }
-
-        //Adding this order to the basket
-        basket.ableToFullfil += quantityToBuy;
-        basket.amountSpent += quantityToBuy * parseInt(currentOrder.price);
-        basket.breakdown.push({
-          order: currentOrder,
-          boughtFromThisOrder: quantityToBuy
-        });
-
-        //Breaking out of the loop (if need be)
-        quantityRemaining -= quantityToBuy;
-        if (quantityRemaining == 0) {
-          break;
-        }
-      }
     } else {
-      
+      //Finding orders that can match this one, either completely or partially
+      orders = await Order.find({
+        where: {asset: order.asset, type: OrderType.BUY, status: OrderStatus.OPEN, price: MoreThan(order.price)},
+        order: {price: "DESC"}
+      });
+    }
+ 
+    //Building the basket
+    for (let i = 0; i <= orders.length - 1; i++) {
+      let currentOrder = orders[i];
+      let quantityAvailable = currentOrder.quantity - currentOrder.filled;
+
+      //Determining how much we're moving from this specific order
+      let quantityToMove = 0;
+      if (quantityAvailable >= quantityRemaining) {
+        quantityToMove = quantityRemaining;
+      } else {
+        quantityToMove = quantityAvailable;
+      }
+
+      //Adding this order to the basket
+      basket.ableToFullfil += quantityToMove;
+      basket.amountOfBaseAssetMoved += quantityToMove * parseInt(currentOrder.price);
+      basket.breakdown.push({
+        order: currentOrder,
+        boughtFromThisOrder: quantityToMove
+      });
+
+      //Breaking out of the loop (if need be)
+      quantityRemaining -= quantityToMove;
+      if (quantityRemaining == 0) {
+        break;
+      }
     }
 
     return basket;
