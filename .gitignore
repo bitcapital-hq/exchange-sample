@@ -67,3 +67,4 @@ $RECYCLE.BIN/
 *.msp
 *.lnk
 dist/
+config/bitcapital.config.ts
