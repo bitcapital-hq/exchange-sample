@@ -53,9 +53,9 @@ export default class BitCapitalService extends Service {
         password: mediatorCredentials.password
       });
 
-      if (mediator.role !== 'mediator') {
-        throw new BaseError('Could not instantiate a mediator session.');
-      }
+      // if (mediator.role !== 'mediator') {
+      //   throw new BaseError('Could not instantiate a mediator session.');
+      // }
 
       await Logger.getInstance().silly(`[BitCapital Service] Succesfully authenticated as ${mediatorCredentials.username}`);
       await Logger.getInstance().silly(`[BitCapital Service] Credential level: ${mediator.role}`);
