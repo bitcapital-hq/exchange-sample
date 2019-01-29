@@ -66,7 +66,7 @@ export default class AuthService extends Service {
 
     const session = new Session({
       email: user.email,
-      owner: user
+      owner: user.id
     });
 
     await this.sessionRepository.save(session);

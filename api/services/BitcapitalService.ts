@@ -107,7 +107,6 @@ export default class BitCapitalService extends Service {
       const consumer = await this.bitCapitalClient.consumers().findOne(user.bitcapital_id);
       return consumer.wallets;
     } catch (e) {
-      await Logger.getInstance().debug(require('util').inspect(e));
       throw new BaseError('There was an error trying to get the requested user\'s wallet.');
     }
   }
@@ -128,14 +127,23 @@ export default class BitCapitalService extends Service {
     }
   }
 
-  public static async getAssetBalance(user: ExchangeUser, asset_code: string): Promise<string> {
+  public static async getAssetBalance(user: ExchangeUser, asset_id: string): Promise<string> {
+    //Getting asset from database
+    let asset: Asset;
+    try {
+      asset = await Asset.findOne(asset_id);
+    } catch (e) {
+      throw new BaseError('Invalid asset ID.');
+    }
+
     const wallets = await this.getWallets(user.id.toString());
     try {
       //Iteraing through all balances and attempting to find the requested one
       const wallet_info = await this.getWalletInfo(wallets[0].id);
       for (let i = 0; i <= wallet_info.balances.length - 1; i++) {
         let in_wallet_asset_info = wallet_info.balances[i];
-        if (in_wallet_asset_info.asset_code == asset_code) {
+        if (in_wallet_asset_info.asset_code == asset.code) {
+          await Logger.getInstance().debug(require('util').inspect(in_wallet_asset_info));
           return in_wallet_asset_info.balance.toString();
         }
       }
@@ -146,12 +154,11 @@ export default class BitCapitalService extends Service {
     }
   }
 
-  public static async moveFunds(quantity: number, id: string, destination: string = mediator_info.wallet): Promise<boolean> {
+  public static async moveFunds(quantity: number, source: string, destination: string = mediator_info.wallet): Promise<boolean> {
     try {
-      const wallets = await this.getWallets(id);
-      await Logger.getInstance().silly(require('util').inspect(base_asset));
+      const wallets = await this.getWallets(source); 
       const payment_info = await this.bitCapitalClient.payments().pay({
-        asset: base_asset.asset_code,
+        asset: base_asset.bitcapital_id,
         source: wallets[0].id,
         recipients: [{
           amount: quantity.toString(),
@@ -159,7 +166,6 @@ export default class BitCapitalService extends Service {
         }]
       });
 
-      await Logger.getInstance().debug(require('util').inspect(payment_info));
       return true;
     } catch (e) {
       await Logger.getInstance().debug(require('util').inspect(e));
@@ -207,6 +213,10 @@ export default class BitCapitalService extends Service {
     try {
       asset = await Asset.findOne(id);
     } catch(e) {
+      throw new BaseError('Invalid asset ID.');
+    }
+
+    if (!asset) {
       throw new BaseError('Invalid asset ID.');
     }
 

@@ -20,7 +20,7 @@ export default class Session extends BaseEntity {
 
   @IsNotEmpty()
   @ManyToOne(type => User, user => user.id)
-  public owner: User;
+  public owner: number;
   
   public constructor(data: DeepPartial<Session> = {}) {
     super();

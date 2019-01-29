@@ -43,17 +43,26 @@ export default class OrderService extends Service {
       throw new BaseError('Invalid asset.');
     }
 
-    //Checking if the user has enough money on his wallet to liquidate this position (if it's a buy)
+    //Checking if the user has enough money on his wallet to liquidate this position (if it's a buy), or enough of an asset if it's a sell
     if (type == 'buy') {
       //Getting the user balance on our base asset
-      let balance = parseInt(await BitCapitalService.getAssetBalance(user, base_asset.asset_code));
+      let balance = parseInt(await BitCapitalService.getAssetBalance(user, base_asset.id));
       let order_total = quantity * parseInt(price);
       if (balance < order_total) {
         throw new BaseError("You don't have enough funds to open this position.");
       }
 
       //Moving funds out of the user wallet
-      await BitCapitalService.moveFunds(order_total, user.id.toString());
+      // await BitCapitalService.moveFunds(order_total, user.id.toString());
+    } else {
+      //Getting the user balance on the desired asset
+      let balance = parseInt(await BitCapitalService.getAssetBalance(user, asset));
+      if (balance < quantity) {
+        throw new BaseError("You don't have enough of the requested asset to sell.");
+      }
+
+      //Moving the tokens out of the user wallet
+      //TO-DO: Waiting to get .moveFunds fixed
     }
 
     //Adding the order to the book
@@ -64,7 +73,7 @@ export default class OrderService extends Service {
     order.price = price;
     order.status = OrderStatus.OPEN;
     order.type = (type == 'buy' ? OrderType.BUY : OrderType.SELL)
-    await order.save();
+    // await order.save();
 
     return order
   }

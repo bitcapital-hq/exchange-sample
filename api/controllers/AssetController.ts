@@ -67,11 +67,11 @@ export default class AssetController {
         throw new HttpError('Invalid asset ID.', HttpCode.Client.BAD_REQUEST);
       }
       
-      await Logger.getInstance().debug(asset.bitcapital_asset_id);
       const deletedAssets = await BitCapitalService.deleteAsset(asset.bitcapital_asset_id);
       await asset.remove();
       response.success(deletedAssets);
     } catch (e) {
+      await Logger.getInstance().debug(require('util').inspect(e));
       throw new HttpError('There was an error trying to delete the requested asset.', HttpCode.Server.INTERNAL_SERVER_ERROR);
     }
   }

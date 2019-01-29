@@ -3,12 +3,13 @@ import OrderService from '../services/OrderService';
 import AuthService from '../services/AuthService';
 import { User } from '../models';
 import Validate, { Params } from 'ts-framework-validation';
-import { isValidAmount, isValidGuid, isValidOrderType, isValidAssetHybrid } from '../Validators';
+import { isValidAmount, isValidGuid, isValidOrderType } from '../Validators';
+import { Logger } from 'ts-framework-common';
 
 @Controller('/order')
 export default class OrderController {
   @Post('/create/', [
-    Validate.middleware('asset', isValidAssetHybrid),
+    Validate.middleware('asset', isValidGuid),
     Validate.middleware('type', isValidOrderType),
     Validate.middleware('quantity', isValidAmount),
     Validate.middleware('price', isValidAmount),
@@ -25,12 +26,17 @@ export default class OrderController {
 
     try {
       //Getting the token holder's user info
+      await Logger.getInstance().debug(require('util').inspect(token_info));
       const user = await User.findOne(token_info.owner);
       const order = await OrderService.create(asset, type, quantity, price, user);
       response.success(order);
     } catch (e) {
-      if (e.hasOwnProperty('originalMessage') && e.originalMessage == "You don't have enough funds to open this position.") {
-        throw new HttpError('You do not have enough funds to fully liquidate this position once open.', HttpCode.Client.BAD_REQUEST);  
+      if (e.hasOwnProperty('originalMessage')) {
+        if (e.originalMessage == "You don't have enough funds to open this position.") {
+          throw new HttpError('You do not have enough funds to fully liquidate this position once open.', HttpCode.Client.BAD_REQUEST);
+        } else if (e.originalMessage == "You don't have enough of the requested asset to sell.") {
+          throw new HttpError('The amount of the asset you tried to sell is higher than your current reserves.', HttpCode.Client.BAD_REQUEST);
+        }
       }
 
       throw new HttpError('There was an error trying to create an order.', HttpCode.Server.INTERNAL_SERVER_ERROR, e);
