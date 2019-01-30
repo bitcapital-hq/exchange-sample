@@ -52,9 +52,4 @@ export default class AuthController {
       bitcapital_id: user_creation_info.user.bitcapital_id
     });
   }
-
-  @Post("/test")
-  public static async test(request: BaseRequest, response: BaseResponse) {
-    await AuthService.getInstance().getTokenInfo(request.body.token);
-  }
 }
