@@ -35,7 +35,7 @@ export default class OrderService extends Service {
   
   public static async create(asset: string, type: string, quantity: number, price: string, user: User) {
     //Checking if the given asset ID is valid
-    const database_asset = Asset.findOne({where: [
+    const database_asset = await Asset.findOne({where: [
       {id: asset},
       {code: asset}
     ]});
@@ -53,7 +53,7 @@ export default class OrderService extends Service {
       }
 
       //Moving funds out of the user wallet
-      await BitCapitalService.moveFunds(order_total, user.id.toString());
+      await BitCapitalService.moveTokens(order_total, user);
     } else {
       //Getting the user balance on the desired asset
       let balance = parseInt(await BitCapitalService.getAssetBalance(user, asset));
@@ -62,7 +62,7 @@ export default class OrderService extends Service {
       }
 
       //Moving the tokens out of the user wallet
-      //TO-DO: Waiting to get .moveFunds fixed
+      await BitCapitalService.moveTokens(quantity, user, database_asset.id);
     }
 
     //Adding the order to the book

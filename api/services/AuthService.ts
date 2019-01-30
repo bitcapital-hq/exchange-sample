@@ -1,4 +1,4 @@
-import { BaseError, Service, ServiceOptions, Logger } from 'ts-framework-common';
+import { BaseError, Service, ServiceOptions } from 'ts-framework-common';
 import { HttpError, HttpCode } from 'ts-framework'; 
 import { User, Session } from '../models'
 import { getRepository, Repository } from 'typeorm';

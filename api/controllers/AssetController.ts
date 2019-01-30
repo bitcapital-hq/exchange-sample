@@ -4,8 +4,6 @@ import {isValidAssetCode, isValidGuid, isValidAmount} from '../Validators';
 import BitCapitalService from '../services/BitcapitalService';
 import { Asset } from '../models';
 import { AssetType } from '../models/Asset';
-import { Logger } from 'ts-framework-common';
-import { UserRole } from 'bitcapital-core-sdk';
 
 @Controller('/asset')
 export default class AssetController {
@@ -72,8 +70,13 @@ export default class AssetController {
       await asset.remove();
       response.success(deletedAssets);
     } catch (e) {
-      await Logger.getInstance().debug(require('util').inspect(e));
       throw new HttpError('There was an error trying to delete the requested asset.', HttpCode.Server.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  @Get('/test')
+  public static async test(request: BaseRequest, response: BaseResponse) {
+    let x = await BitCapitalService.bitCapitalClient.current().wallets[0].id;
+    response.success(await BitCapitalService.bitCapitalClient.wallets().findOne(x));
   }
 }

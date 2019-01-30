@@ -4,6 +4,6 @@ export const base_asset = {
     asset_code: 'MUSD'
 }
 
-export const mediator_info = {
+export const holder_info = {
     wallet: 'ef2757e0-01a5-4218-a8cc-0a7ed8bf3eef'
 }

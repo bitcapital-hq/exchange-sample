@@ -2,7 +2,7 @@ import { BaseError, Service, ServiceOptions, Logger, LoggerUtils } from 'ts-fram
 import Bitcapital, {User, Session, StorageUtil, MemoryStorage, AssetSchema, Wallet} from 'bitcapital-core-sdk'
 import {User as ExchangeUser, Asset} from '../models'
 import { apiCredentials, mediatorCredentials } from '../../config/bitcapital.config';
-import { mediator_info, base_asset } from '../../config/exchange.config';
+import { holder_info, base_asset } from '../../config/exchange.config';
 
 const session = new Session({
   storage: new StorageUtil("session", new MemoryStorage()),
@@ -150,19 +150,25 @@ export default class BitCapitalService extends Service {
     }
   }
 
-  public static async moveFunds(quantity: number, source: string, destination: string = mediator_info.wallet): Promise<boolean> {
+  public static async moveTokens(quantity: number, user: ExchangeUser, asset_id: string = base_asset.id, destination: string = holder_info.wallet) {
+    //Getting asset info
+    const asset = await Asset.findOne(asset_id);
+    if (!asset) {
+      throw new BaseError('Invalid asset ID.');
+    }
+
+    //Moving the tokens
     try {
-      const wallets = await this.getWallets(source); 
+      const wallets = await this.getWallets(user.id.toString());
       const payment_info = await this.bitCapitalClient.payments().pay({
-        asset: base_asset.bitcapital_id,
+        asset: asset.bitcapital_asset_id,
         source: wallets[0].id,
         recipients: [{
           amount: quantity.toString(),
           destination: destination
         }]
       });
-
-      return true;
+      await Logger.getInstance().debug(require('util').inspect(payment_info));
     } catch (e) {
       throw new BaseError('There was an error trying to move funds out of the user\'s wallet.');
     }
