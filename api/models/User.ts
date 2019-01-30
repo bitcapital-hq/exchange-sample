@@ -53,7 +53,7 @@ export default class User extends BaseEntity {
   @OneToMany(type => Payment, payment => payment.origin)
   public payments: Payment[]
 
-  @OneToMany(type => Session, session => session.id)
+  @OneToMany(type => Session, session => session.owner)
   public sessions: Session[]
 
   constructor(data: Partial<User>) {

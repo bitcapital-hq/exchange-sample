@@ -19,8 +19,8 @@ export default class Session extends BaseEntity {
   public is_valid: boolean = true;
 
   @IsNotEmpty()
-  @ManyToOne(type => User, user => user.id)
-  public owner: number;
+  @ManyToOne(type => User, user => user.sessions, {eager: true})
+  public owner: User;
   
   public constructor(data: DeepPartial<Session> = {}) {
     super();

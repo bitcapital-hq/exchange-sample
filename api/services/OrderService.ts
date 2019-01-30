@@ -78,7 +78,7 @@ export default class OrderService extends Service {
     return order
   }
 
-  public static async match(order: Order): Promise<object> {
+    public static async match(order: Order): Promise<object> {
     let basket = {
       ableToFullfil: 0,
       amountOfBaseAssetMoved: 0,
