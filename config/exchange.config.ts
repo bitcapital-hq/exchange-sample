@@ -1,7 +1,7 @@
 export const base_asset = {
-    id: 'c320f845-117f-4824-8230-b7e416ab624f',
-    bitcapital_id: '974057b2-7bab-40bc-9b68-dcf342f44601',
-    asset_code: 'EUSD'
+    id: 'bcebe2d7-c9da-42ad-bdde-4d6bdf354e45',
+    bitcapital_id: '06f3cd1a-b07d-493c-b52f-861379ca6da5',
+    asset_code: 'MUSD'
 }
 
 export const mediator_info = {

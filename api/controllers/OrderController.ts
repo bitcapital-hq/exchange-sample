@@ -1,4 +1,4 @@
-import { Controller, Get, BaseRequest, BaseResponse, HttpError, HttpCode, Post } from 'ts-framework';
+import { Controller, BaseRequest, BaseResponse, HttpError, HttpCode, Post } from 'ts-framework';
 import OrderService from '../services/OrderService';
 import AuthService from '../services/AuthService';
 import { User } from '../models';

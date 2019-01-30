@@ -2,7 +2,6 @@ import { BaseError, Service, ServiceOptions, Logger, LoggerUtils } from 'ts-fram
 import Bitcapital, {User, Session, StorageUtil, MemoryStorage, AssetSchema, Wallet} from 'bitcapital-core-sdk'
 import {User as ExchangeUser, Asset} from '../models'
 import { apiCredentials, mediatorCredentials } from '../../config/bitcapital.config';
-import json5 = require('json5');
 import { mediator_info, base_asset } from '../../config/exchange.config';
 
 const session = new Session({
@@ -129,10 +128,8 @@ export default class BitCapitalService extends Service {
 
   public static async getAssetBalance(user: ExchangeUser, asset_id: string): Promise<string> {
     //Getting asset from database
-    let asset: Asset;
-    try {
-      asset = await Asset.findOne(asset_id);
-    } catch (e) {
+    const asset = await Asset.findOne(asset_id);
+    if (!asset) {
       throw new BaseError('Invalid asset ID.');
     }
 
@@ -143,7 +140,6 @@ export default class BitCapitalService extends Service {
       for (let i = 0; i <= wallet_info.balances.length - 1; i++) {
         let in_wallet_asset_info = wallet_info.balances[i];
         if (in_wallet_asset_info.asset_code == asset.code) {
-          await Logger.getInstance().debug(require('util').inspect(in_wallet_asset_info));
           return in_wallet_asset_info.balance.toString();
         }
       }
@@ -168,7 +164,6 @@ export default class BitCapitalService extends Service {
 
       return true;
     } catch (e) {
-      await Logger.getInstance().debug(require('util').inspect(e));
       throw new BaseError('There was an error trying to move funds out of the user\'s wallet.');
     }
   }
@@ -209,14 +204,8 @@ export default class BitCapitalService extends Service {
 
   public static async emitToken(id: string, recipient: string, amount: string) {
     //Getting the BitCapital ID of the asset
-    let asset: Asset;
-    try {
-      asset = await Asset.findOne(id);
-    } catch(e) {
-      throw new BaseError('Invalid asset ID.');
-    }
-
-    if (!asset) {
+    const asset = await Asset.findOne(id);
+     if (!asset) {
       throw new BaseError('Invalid asset ID.');
     }
 

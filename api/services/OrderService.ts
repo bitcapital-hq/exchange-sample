@@ -53,7 +53,7 @@ export default class OrderService extends Service {
       }
 
       //Moving funds out of the user wallet
-      // await BitCapitalService.moveFunds(order_total, user.id.toString());
+      await BitCapitalService.moveFunds(order_total, user.id.toString());
     } else {
       //Getting the user balance on the desired asset
       let balance = parseInt(await BitCapitalService.getAssetBalance(user, asset));
@@ -78,7 +78,7 @@ export default class OrderService extends Service {
     return order
   }
 
-    public static async match(order: Order): Promise<object> {
+  public static async match(order: Order): Promise<object> {
     let basket = {
       ableToFullfil: 0,
       amountOfBaseAssetMoved: 0,
