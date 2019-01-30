@@ -5,6 +5,7 @@ import BitCapitalService from '../services/BitcapitalService';
 import { Asset } from '../models';
 import { AssetType } from '../models/Asset';
 import { Logger } from 'ts-framework-common';
+import { UserRole } from 'bitcapital-core-sdk';
 
 @Controller('/asset')
 export default class AssetController {

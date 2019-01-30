@@ -5,5 +5,5 @@ export const base_asset = {
 }
 
 export const mediator_info = {
-    wallet: '7f8a9d83-300f-4e09-9b89-500e9fb00a5c'
+    wallet: 'ef2757e0-01a5-4218-a8cc-0a7ed8bf3eef'
 }
