@@ -137,10 +137,8 @@ export default class OrderService extends Service {
     return basket;
   }
 
-  public static async executeBasket(basket: Basket, order: Order): Promise<object> {
-    const operations = {
-
-    }
+  public static async executeBasket(basket: Basket, order: Order): Promise<Object[]> {
+    let operations = [];
     
     //Getting the order originator wallet
     const originatorWallets = await BitCapitalService.getWallets(order.user.id.toString());
@@ -155,12 +153,20 @@ export default class OrderService extends Service {
 
         //Moving crypto from the seller wallet to the buyer's one
         await BitCapitalService.moveTokens(currentOrder.boughtFromThisOrder, currentOrder.order.user, orderInfo.asset.id, originatorWallets[0].id);
+        operations.push({
+          asset: orderInfo.asset.id,
+          quantity: currentOrder.boughtFromThisOrder
+        });
 
         //Moving base asset from the buyer's wallet to the seller one
         const orderOwnerWallets = await BitCapitalService.getWallets(currentOrder.order.user.id.toString());
 
         const baseAssetToMove = currentOrder.boughtFromThisOrder * parseInt(currentOrder.order.price);
         await BitCapitalService.moveTokens(baseAssetToMove, order.user, base_asset.id, orderOwnerWallets[0].id);
+        operations.push({
+          asset: base_asset.id,
+          quantity: baseAssetToMove
+        });
       } catch (e) {
         throw new BaseError('There was an error trying to move assets around.');
       }
