@@ -30,7 +30,7 @@ export default class Asset extends BaseEntity {
   @Column({ nullable: false })
   public bitcapital_asset_id: string;
 
-  @OneToMany(type => Order, order => order.user)
+  @OneToMany(type => Order, order => order.asset)
   public orders: Order[];
 
   public constructor(data: DeepPartial<Asset> = {}) {

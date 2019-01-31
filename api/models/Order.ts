@@ -22,11 +22,11 @@ export default class Order extends BaseEntity {
   public id: string;
 
   @IsNotEmpty()
-  @ManyToOne(type => User, user => user.orders)
+  @ManyToOne(type => User, user => user.orders, {eager: true})
   public user: User;
 
   @IsNotEmpty()
-  @ManyToOne(type => Asset, asset => asset.orders)
+  @ManyToOne(type => Asset, asset => asset.orders, {eager: true})
   public asset: Asset;
 
   @IsNotEmpty()

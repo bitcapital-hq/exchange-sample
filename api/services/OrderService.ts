@@ -3,7 +3,7 @@ import { Asset, User, Order } from '../models';
 import BitCapitalService from './BitcapitalService';
 import { base_asset } from '../../config/exchange.config';
 import { OrderStatus, OrderType } from '../models/Order';
-import { LessThan, MoreThan } from 'typeorm';
+import { Basket } from '../interfaces/basket';
 
 export interface OrderServiceOptions extends ServiceOptions {
 }
@@ -78,9 +78,10 @@ export default class OrderService extends Service {
     return order
   }
 
-  public static async match(order: Order): Promise<object> {
-    let basket = {
-      ableToFullfil: 0,
+  public static async match(order: Order): Promise<Basket> {
+    let basket: Basket;
+    basket = {
+      ableToFulfill: 0,
       amountOfBaseAssetMoved: 0,
       breakdown: [],
       partial: true
@@ -98,14 +99,12 @@ export default class OrderService extends Service {
     } else {
       //Finding orders that can match this one, either completely or partially
       orders = await Order.createQueryBuilder()
-        .where('proce >= :price', { price: order.price })
+        .where('price >= :price', { price: order.price })
         .where({asset: order.asset, type: OrderType.BUY, status: OrderStatus.OPEN})
         .orderBy({ price: 'ASC' })
         .getMany();
     }
  
-    await Logger.getInstance().debug(require('util').inspect(orders));
-
     //Building the basket
     for (let i = 0; i <= orders.length - 1; i++) {
       let currentOrder = orders[i];
@@ -120,7 +119,7 @@ export default class OrderService extends Service {
       }
 
       //Adding this order to the basket
-      basket.ableToFullfil += quantityToMove;
+      basket.ableToFulfill += quantityToMove;
       basket.amountOfBaseAssetMoved += quantityToMove * parseInt(currentOrder.price);
       basket.breakdown.push({
         order: currentOrder,
@@ -136,6 +135,42 @@ export default class OrderService extends Service {
     }
 
     return basket;
+  }
+
+  public static async executeBasket(basket: Basket, order: Order): Promise<object> {
+    const operations = {
+
+    }
+    
+    //Getting the order originator wallet
+    const originatorWallets = await BitCapitalService.getWallets(order.user.id.toString());
+
+    //Iterating through the orders, and updating them
+    for (let i = 0; i <= basket.breakdown.length - 1; i++) {
+      const currentOrder = basket.breakdown[i];
+            
+      //Attempting to move funds
+      try {
+        const orderInfo = await Order.findOne(currentOrder.order.id);
+
+        //Moving crypto from the seller wallet to the buyer's one
+        await BitCapitalService.moveTokens(currentOrder.boughtFromThisOrder, currentOrder.order.user, orderInfo.asset.id, originatorWallets[0].id);
+
+        //Moving base asset from the buyer's wallet to the seller one
+        const orderOwnerWallets = await BitCapitalService.getWallets(currentOrder.order.user.id.toString());
+
+        const baseAssetToMove = currentOrder.boughtFromThisOrder * parseInt(currentOrder.order.price);
+        await BitCapitalService.moveTokens(baseAssetToMove, order.user, base_asset.id, orderOwnerWallets[0].id);
+      } catch (e) {
+        throw new BaseError('There was an error trying to move assets around.');
+      }
+
+      //Updating the order
+    }
+
+    //Updating the main originating order
+
+    return operations;
   }
 
   async onMount(): Promise<void> {

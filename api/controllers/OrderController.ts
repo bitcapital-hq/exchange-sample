@@ -4,6 +4,7 @@ import AuthService from '../services/AuthService';
 import { User } from '../models';
 import Validate, { Params } from 'ts-framework-validation';
 import { isValidAmount, isValidGuid, isValidOrderType } from '../Validators';
+import { Logger } from 'ts-framework-common';
 
 @Controller('/order')
 export default class OrderController {
@@ -30,7 +31,10 @@ export default class OrderController {
 
       //Attempting to match the order
       const basket = await OrderService.match(order);
-      response.success({order, basket});
+
+      //Executing the basket
+      const basket_execution = await OrderService.executeBasket(basket, order);
+      response.success(basket_execution);
     } catch (e) {
       if (e.hasOwnProperty('originalMessage')) {
         if (e.originalMessage == "You don't have enough funds to open this position.") {
@@ -40,6 +44,7 @@ export default class OrderController {
         }
       }
 
+      await Logger.getInstance().debug(require('util').inspect(e));
       throw new HttpError('There was an error trying to create an order.', HttpCode.Server.INTERNAL_SERVER_ERROR, e);
     }
   }
