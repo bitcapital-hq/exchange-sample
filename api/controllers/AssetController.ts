@@ -41,7 +41,7 @@ export default class AssetController {
       const token = await BitCapitalService.emitToken(id, recipient, amount);
       response.success(token);
     } catch (e) {
-      throw new HttpError('There was an error trying to emit tokens.', HttpCode.Server.INTERNAL_SERVER_ERROR);
+      throw new HttpError('There was an error trying to emit tokens.', HttpCode.Server.INTERNAL_SERVER_ERROR, e);
     }
   }
 
@@ -72,11 +72,5 @@ export default class AssetController {
     } catch (e) {
       throw new HttpError('There was an error trying to delete the requested asset.', HttpCode.Server.INTERNAL_SERVER_ERROR);
     }
-  }
-
-  @Get('/test')
-  public static async test(request: BaseRequest, response: BaseResponse) {
-    let x = await BitCapitalService.bitCapitalClient.current().wallets[0].id;
-    response.success(await BitCapitalService.bitCapitalClient.wallets().findOne(x));
   }
 }

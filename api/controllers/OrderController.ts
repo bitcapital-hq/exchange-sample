@@ -4,7 +4,6 @@ import AuthService from '../services/AuthService';
 import { User } from '../models';
 import Validate, { Params } from 'ts-framework-validation';
 import { isValidAmount, isValidGuid, isValidOrderType } from '../Validators';
-import { Logger } from 'ts-framework-common';
 
 @Controller('/order')
 export default class OrderController {
@@ -26,10 +25,12 @@ export default class OrderController {
 
     try {
       //Getting the token holder's user info
-      await Logger.getInstance().debug(require('util').inspect(token_info));
       const user = await User.findOne(token_info.owner);
       const order = await OrderService.create(asset, type, quantity, price, user);
-      response.success(order);
+
+      //Attempting to match the order
+      const basket = await OrderService.match(order);
+      response.success({order, basket});
     } catch (e) {
       if (e.hasOwnProperty('originalMessage')) {
         if (e.originalMessage == "You don't have enough funds to open this position.") {

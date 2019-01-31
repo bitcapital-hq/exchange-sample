@@ -150,7 +150,7 @@ export default class BitCapitalService extends Service {
     }
   }
 
-  public static async moveTokens(quantity: number, user: ExchangeUser, asset_id: string = base_asset.id, destination: string = holder_info.wallet) {
+  public static async moveTokens(quantity: number, user: ExchangeUser, asset_id: string = base_asset.id, destination: string = holder_info.wallet): Promise<boolean> {
     //Getting asset info
     const asset = await Asset.findOne(asset_id);
     if (!asset) {
@@ -168,7 +168,8 @@ export default class BitCapitalService extends Service {
           destination: destination
         }]
       });
-      await Logger.getInstance().debug(require('util').inspect(payment_info));
+
+      return true;
     } catch (e) {
       throw new BaseError('There was an error trying to move funds out of the user\'s wallet.');
     }

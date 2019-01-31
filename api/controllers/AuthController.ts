@@ -3,7 +3,6 @@ import AuthService from '../services/AuthService';
 import BitCapitalService from '../services/BitcapitalService';
 import Validate, { Params } from 'ts-framework-validation';
 import {isValidName, isValidEmail, isValidPassword, isValidCPF} from '../Validators';
-import Bitcapital from 'bitcapital-core-sdk';
 import { Session } from '../models';
 
 @Controller('/user')

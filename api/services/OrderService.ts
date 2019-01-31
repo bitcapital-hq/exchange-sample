@@ -73,7 +73,7 @@ export default class OrderService extends Service {
     order.price = price;
     order.status = OrderStatus.OPEN;
     order.type = (type == 'buy' ? OrderType.BUY : OrderType.SELL)
-    // await order.save();
+    await order.save();
 
     return order
   }
@@ -82,25 +82,30 @@ export default class OrderService extends Service {
     let basket = {
       ableToFullfil: 0,
       amountOfBaseAssetMoved: 0,
-      breakdown: []
+      breakdown: [],
+      partial: true
     };
 
     let quantityRemaining = order.quantity - order.filled;
     let orders = [];
     if (order.type == 'buy') {
       //Finding orders that can match this one, either completely or partially
-      orders = await Order.find({
-        where: {asset: order.asset, type: OrderType.SELL, status: OrderStatus.OPEN, price: LessThan(order.price)},
-        order: {price: "ASC"}
-      });
+      orders = await Order.createQueryBuilder()
+        .where('price <= :price', { price: order.price })
+        .where({asset: order.asset, type: OrderType.SELL, status: OrderStatus.OPEN})
+        .orderBy({ price: 'DESC'})
+        .getMany();
     } else {
       //Finding orders that can match this one, either completely or partially
-      orders = await Order.find({
-        where: {asset: order.asset, type: OrderType.BUY, status: OrderStatus.OPEN, price: MoreThan(order.price)},
-        order: {price: "DESC"}
-      });
+      orders = await Order.createQueryBuilder()
+        .where('proce >= :price', { price: order.price })
+        .where({asset: order.asset, type: OrderType.BUY, status: OrderStatus.OPEN})
+        .orderBy({ price: 'ASC' })
+        .getMany();
     }
  
+    await Logger.getInstance().debug(require('util').inspect(orders));
+
     //Building the basket
     for (let i = 0; i <= orders.length - 1; i++) {
       let currentOrder = orders[i];
@@ -125,6 +130,7 @@ export default class OrderService extends Service {
       //Breaking out of the loop (if need be)
       quantityRemaining -= quantityToMove;
       if (quantityRemaining == 0) {
+        basket.partial = false;
         break;
       }
     }
