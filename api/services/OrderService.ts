@@ -192,6 +192,7 @@ export default class OrderService extends Service {
           quantity: order.quantity
         }
       });
+
     } catch (e) {
       throw new BaseError('There was an error trying to get the orders originating from this user.');
     }
