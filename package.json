@@ -9,7 +9,8 @@
     "build": "yarn tsc",
     "console": "ts-framework console",
     "test": "jest --config jest.json",
-    "debug": "node -r ts-node/register node_modules/.bin/ts-framework watch --inspect=9229;"
+    "debug": "node -r ts-node/register node_modules/.bin/ts-framework watch --inspect=9229;",
+    "postinstall": "yarn typeorm migration:run"
   },
   "dependencies": {
     "bitcapital-core-sdk": "github:bitcapital-hq/bitcapital-core-sdk#1.3.0",
