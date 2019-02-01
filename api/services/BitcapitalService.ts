@@ -175,6 +175,18 @@ export default class BitCapitalService extends Service {
     }
   }
 
+  public static async getPrettyBalances(user: ExchangeUser) {
+    const wallets = await this.getWallets(user.id.toString());
+    const walletInfo = await this.getWalletInfo(wallets[0].id);
+
+    return walletInfo.balances.map((balances ) => {
+      return {
+        code: (balances.asset_type == 'native' ? 'XLM' : balances.asset_code),
+        balance: balances.balance
+      }
+    }); 
+  }
+
   //Methods from here on now are not meant for user-facing usage, they're just here to facilitate demonstrations/tests.
   public static async createAsset(name: string, code: string) {
     try {
