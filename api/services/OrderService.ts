@@ -49,10 +49,10 @@ export default class OrderService extends Service {
       let balance = parseInt(await BitCapitalService.getAssetBalance(user, base_asset.id));
       let order_total = quantity * parseInt(price);
       if (balance < order_total) {
-        throw new BaseError("You don't have enough funds to open this position.");
+        throw new BaseError("You don't haveadsasdasdasdasdasdasdasdasdasdasdon.");
       }
 
-      //Moving funds out of the user wallet
+      //Moving funds out of the user walletadsasdasdasdasdasdasdasdasdasdasd
       await BitCapitalService.moveTokens(order_total, user);
     } else {
       //Getting the user balance on the desired asset
@@ -177,6 +177,24 @@ export default class OrderService extends Service {
     //Updating the main originating order
 
     return operations;
+  }
+
+  public static async getOrdersFromUser(user: User) {
+    try {
+      const orders = await Order.find({where: {user: user}});
+      return orders.map((order) => {
+        return {
+          id: order.id,
+          asset: order.asset,
+          filled: order.filled,
+          type: order.type,
+          status: order.status,
+          quantity: order.quantity
+        }
+      });
+    } catch (e) {
+      throw new BaseError('There was an error trying to get the orders originating from this user.');
+    }
   }
 
   async onMount(): Promise<void> {

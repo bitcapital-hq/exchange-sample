@@ -4,6 +4,7 @@ import BitCapitalService from '../services/BitcapitalService';
 import Validate, { Params } from 'ts-framework-validation';
 import {isValidName, isValidEmail, isValidPassword, isValidCPF, isValidGuid} from '../Validators';
 import { Session } from '../models';
+import OrderService from '../services/OrderService';
 
 @Controller('/user')
 export default class AuthController {
@@ -68,10 +69,29 @@ export default class AuthController {
         const userInfo = {
           balances: await BitCapitalService.getPrettyBalances(token_info.owner)
         }
-        
+
         response.success(userInfo);
       } catch (e) {
         throw new HttpError('There was an error whilst gathering information about an user.', HttpCode.Server.INTERNAL_SERVER_ERROR, e);
       }
+  }
+
+  @Post("/orders", [
+    Validate.middleware('token', isValidGuid)
+  ])
+  public static async orders(request: BaseRequest, response: BaseResponse) {
+    const { token }: { token: string } = request.body;
+
+    //Checking if the given token is valid
+    const token_info = await AuthService.getInstance().getTokenInfo(token);
+    if (!token_info.valid) {
+      throw new HttpError('Invalid token.', HttpCode.Client.FORBIDDEN);
+    }
+    
+    try {
+      response.success(await OrderService.getOrdersFromUser(token_info.owner));
+    } catch (e) {
+      throw new HttpError('There was an error trying to get order information about an user.', HttpCode.Server.INTERNAL_SERVER_ERROR, e);
+    }
   }
 }
