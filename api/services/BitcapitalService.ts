@@ -185,6 +185,26 @@ export default class BitCapitalService extends Service {
     }
   }
 
+  public static async moveTokensFromMediator(quantity: number, to: ExchangeUser, asset: Asset): Promise<boolean> {
+    //Moving tokens
+    try {
+      const wallets = await this.getWallets(to.id.toString());
+      const paymentInfo = await this.bitCapitalClient.payments().pay({
+        asset: asset.bitcapital_asset_id,
+        source: holder_info.wallet,
+        recipients: [{
+          amount: quantity.toString(),
+          destination: wallets[0].id
+        }]
+      });
+
+      // return paymentInfo;
+      return true;
+    } catch(e) {
+      throw new BaseError('There was an error trying to move funds out of the mediator wallet.');
+    }
+  }
+
   public static async getPrettyBalances(user: ExchangeUser) {
     const wallets = await this.getWallets(user.id.toString());
     const walletInfo = await this.getWalletInfo(wallets[0].id);

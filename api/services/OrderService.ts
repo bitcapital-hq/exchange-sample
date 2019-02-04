@@ -1,9 +1,10 @@
 import { BaseError, Service, ServiceOptions, Logger } from 'ts-framework-common';
 import { Asset, User, Order } from '../models';
 import BitCapitalService from './BitcapitalService';
-import { base_asset } from '../../config/exchange.config';
+import { base_asset, holder_info } from '../../config/exchange.config';
 import { OrderStatus, OrderType } from '../models/Order';
 import { Basket } from '../interfaces/basket';
+import Bitcapital from 'bitcapital-core-sdk';
 
 export interface OrderServiceOptions extends ServiceOptions {
 }
@@ -139,44 +140,39 @@ export default class OrderService extends Service {
     return basket;
   }
 
-  public static async referenceExecuteBasket(basket: Basket, order: Order): Promise<Object[]> {
+  public static async executeBasket(basket: Basket, order: Order): Promise<Object[]> {
     let operations = [];
-    
-    //Getting the order originator wallet
-    const originatorWallets = await BitCapitalService.getWallets(order.user.id.toString());
+
+    //Getting the user wallet
+    const userWallets = await BitCapitalService.getWallets(order.user.id.toString());
 
     //Iterating through the orders, and updating them
     for (let i = 0; i <= basket.breakdown.length - 1; i++) {
       const currentOrder = basket.breakdown[i];
-            
+
       //Attempting to move funds
       try {
         const orderInfo = await Order.findOne(currentOrder.order.id);
+        if (orderInfo.type == OrderType.BUY) {
 
-        //Moving crypto from the seller wallet to the buyer's one
-        await BitCapitalService.moveTokens(currentOrder.boughtFromThisOrder, currentOrder.order.user, orderInfo.asset.id, originatorWallets[0].id);
-        operations.push({
-          asset: orderInfo.asset.id,
-          quantity: currentOrder.boughtFromThisOrder
-        });
+          //Moving tokens from the mediator wallet, into the buyer's wallet
+          await BitCapitalService.moveTokensFromMediator(currentOrder.boughtFromThisOrder, order.user, orderInfo.asset);
+          operations.push({
+            to: order.user.id,
+            from: holder_info.wallet,
+            asset: orderInfo.asset,
+            quantity: currentOrder.boughtFromThisOrder
+          });
 
-        //Moving base asset from the buyer's wallet to the seller one
-        const orderOwnerWallets = await BitCapitalService.getWallets(currentOrder.order.user.id.toString());
-
-        const baseAssetToMove = currentOrder.boughtFromThisOrder * parseInt(currentOrder.order.price);
-        await BitCapitalService.moveTokens(baseAssetToMove, order.user, base_asset.id, orderOwnerWallets[0].id);
-        operations.push({
-          asset: base_asset.id,
-          quantity: baseAssetToMove
-        });
+          //Moving base asset from the mediator wallet, into the seller's wallet
+          let baseAssetToMove = currentOrder.boughtFromThisOrder * parseInt(orderInfo.price);
+          let baseAsset = await Asset.findOne(base_asset.id);
+          await BitCapitalService.moveTokensFromMediator(baseAssetToMove, orderInfo.user, baseAsset);
+        }
       } catch (e) {
-        throw new BaseError('There was an error trying to move assets around.');
+        throw new BaseError('There was an error trying to move funds around.');
       }
-
-      //Updating the order
     }
-
-    //Updating the main originating order
 
     return operations;
   }
