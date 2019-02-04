@@ -126,13 +126,7 @@ export default class BitCapitalService extends Service {
     }
   }
 
-  public static async getAssetBalance(user: ExchangeUser, asset_id: string): Promise<string> {
-    //Getting asset from database
-    const asset = await Asset.findOne(asset_id);
-    if (!asset) {
-      throw new BaseError('Invalid asset ID.');
-    }
-
+  public static async getAssetBalance(user: ExchangeUser, asset: Asset): Promise<string> {
     const wallets = await this.getWallets(user.id.toString());
     try {
       //Iteraing through all balances and attempting to find the requested one
@@ -150,28 +144,44 @@ export default class BitCapitalService extends Service {
     }
   }
 
-  public static async moveTokens(quantity: number, user: ExchangeUser, asset_id: string = base_asset.id, destination: string = holder_info.wallet): Promise<boolean> {
-    //Getting asset info
-    const asset = await Asset.findOne(asset_id);
-    if (!asset) {
-      throw new BaseError('Invalid asset ID.');
-    }
-
+  public static async moveTokens(quantity: number, to: ExchangeUser, from: ExchangeUser, asset: Asset): Promise<boolean> {
     //Moving the tokens
     try {
-      const wallets = await this.getWallets(user.id.toString());
-      const payment_info = await this.bitCapitalClient.payments().pay({
+      const toWallets = await this.getWallets(to.id.toString());
+      const fromWallets = await this.getWallets(from.id.toString());
+      const paymentInfo = await this.bitCapitalClient.payments().pay({
+        asset: asset.bitcapital_asset_id,
+        source: fromWallets[0].id,
+        recipients: [{
+          amount: quantity.toString(),
+          destination: toWallets[0].id
+        }]
+      });
+
+      // return paymentInfo;
+      return true;
+    } catch (e) {
+      throw new BaseError('There was an error trying to move funds out of a wallet.');
+    }
+  }
+
+  public static async moveTokensToMediator(quantity: number, from: ExchangeUser, asset: Asset): Promise<boolean> {
+    //Moving tokens
+    try {
+      const wallets = await this.getWallets(from.id.toString());
+      const paymentInfo = await this.bitCapitalClient.payments().pay({
         asset: asset.bitcapital_asset_id,
         source: wallets[0].id,
         recipients: [{
           amount: quantity.toString(),
-          destination: destination
+          destination: holder_info.wallet
         }]
       });
 
+      // return paymentInfo;
       return true;
     } catch (e) {
-      throw new BaseError('There was an error trying to move funds out of the user\'s wallet.');
+      throw new BaseError('There was an error trying to lock funds into the mediator wallet.');
     }
   }
 

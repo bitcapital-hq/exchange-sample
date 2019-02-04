@@ -35,34 +35,36 @@ export default class OrderService extends Service {
   
   public static async create(asset: string, type: string, quantity: number, price: string, user: User) {
     //Checking if the given asset ID is valid
-    const database_asset = await Asset.findOne({where: [
+    const databaseAsset = await Asset.findOne({where: [
       {id: asset},
       {code: asset}
     ]});
-    if (!database_asset) {
+    if (!databaseAsset) {
       throw new BaseError('Invalid asset.');
     }
 
     //Checking if the user has enough money on his wallet to liquidate this position (if it's a buy), or enough of an asset if it's a sell
     if (type == 'buy') {
       //Getting the user balance on our base asset
-      let balance = parseInt(await BitCapitalService.getAssetBalance(user, base_asset.id));
-      let order_total = quantity * parseInt(price);
-      if (balance < order_total) {
-        throw new BaseError("You don't haveadsasdasdasdasdasdasdasdasdasdasdon.");
+      let asset = await Asset.findOne(base_asset.id);
+      let balance = parseInt(await BitCapitalService.getAssetBalance(user, asset));
+      let orderTotal = quantity * parseInt(price);
+      if (balance < orderTotal) {
+        throw new BaseError("You don't have enough balance to fully liquidate this position once open.");
       }
 
-      //Moving funds out of the user walletadsasdasdasdasdasdasdasdasdasdasd
-      await BitCapitalService.moveTokens(order_total, user);
+      //Moving funds out of the user wallet
+      let tokenToBeMoved = await Asset.findOne(base_asset.id);
+      await BitCapitalService.moveTokensToMediator(orderTotal, user, tokenToBeMoved);
     } else {
       //Getting the user balance on the desired asset
-      let balance = parseInt(await BitCapitalService.getAssetBalance(user, asset));
+      let balance = parseInt(await BitCapitalService.getAssetBalance(user, databaseAsset));
       if (balance < quantity) {
         throw new BaseError("You don't have enough of the requested asset to sell.");
       }
 
       //Moving the tokens out of the user wallet
-      await BitCapitalService.moveTokens(quantity, user, database_asset.id);
+      await BitCapitalService.moveTokensToMediator(quantity, user, databaseAsset);
     }
 
     //Adding the order to the book
@@ -137,7 +139,7 @@ export default class OrderService extends Service {
     return basket;
   }
 
-  public static async executeBasket(basket: Basket, order: Order): Promise<Object[]> {
+  public static async referenceExecuteBasket(basket: Basket, order: Order): Promise<Object[]> {
     let operations = [];
     
     //Getting the order originator wallet
